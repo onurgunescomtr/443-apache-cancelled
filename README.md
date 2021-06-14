@@ -8,6 +8,7 @@ Open source package of Verisanat v.4. Object oriented, strongly typed, up to dat
 * System needs a main config and an application config file to run as intended. Those two files can be obtained from verisanat.com preconfigured with v.Account. Like most relational files they are Json. So you can use them in your Vue, React or Node bases.
 * Create an "index.php" file with the following:
 ```php
+require_once 'v-443-configuration/v-classic-system.php';
 
 VTS\System\System::loadMain();
 
