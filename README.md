@@ -5,6 +5,7 @@ Open source package of Verisanat v.4. Object oriented, strongly typed, up to dat
 * Setup and full translation (from TR to EN) in progress.
 
 * This is a release to be used with Apache Web Server.
+* System needs a main config and an application config file to run as intended. Those two files can be obtained from verisanat.com preconfigured with v.Account. Like most relational files they are Json. So you can use them in your Vue, React or Node bases.
 * Create an "index.php" file with the following:
 ```php
 
