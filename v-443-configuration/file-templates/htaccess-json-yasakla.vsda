@@ -1,0 +1,9 @@
+<FilesMatch "\.(?:json)$">
+Order allow,deny
+Deny from all
+Allow from localhost
+Allow from 127.0.0.1
+</FilesMatch>
+<FilesMatch "\.(json)$">
+Require local
+</FilesMatch>

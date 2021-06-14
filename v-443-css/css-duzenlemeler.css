@@ -1,0 +1,576 @@
+/**
+ * 
+ * Verisanat v.4
+ * 
+ * Object oriented, strongly typed, up to date software in modular structure for 
+ * creating web applications. Designed and documented for developers.
+ * 
+ * Release VTS.443.211 - Open Source Package - MPL 2.0 Licensed.
+ * 
+ * https://onurgunescomtr@bitbucket.org/onurgunescomtr/verisanat-v.4.git
+ * https://github.com/onurgunescomtr/verisanat
+ * 
+ * @package		Verisanat v.4.4.3 "Rembrandt"
+ * @subpackage  VTS.443.211 [Tr]Verisanat Tam Sürüm - [En]Verisanat Full Version 
+ * 
+ * @author		Onur Güneş  https://www.facebook.com/onur.gunes.developer
+ *                          https://www.twitter.com/onurgunescomtr
+ *                          mailto:verisanat@outlook.com
+ *                          https://www.verisanat.com/iletisim
+ * 
+ * @copyright	Copyright (c) 2012 - 2021 Onur Güneş
+ *              https://www.verisanat.com
+ *              https://www.onurgunes.com.tr
+ *              [En]All Rights Reserved. [Tr]Tüm hakları saklıdır.
+ * 
+ * @license		Mozilla Public License 2.0
+ *              https://choosealicense.com/licenses/mpl-2.0
+ * 
+ *              This Source Code Form is subject to the terms of the Mozilla Public
+ *              License, v. 2.0. If a copy of the MPL was not distributed with this
+ *              file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ * 
+ * @link		https://www.verisanat.com
+*/
+@-moz-document url-prefix(){
+	.p-sol-yok-firefox{
+		padding-left:0px !important;
+	}
+	/*.col-auto{
+		width:100%;
+	} */
+}
+@media print{a,a:visited{display:none;}}
+.no-print {display: none !important;}
+@media (max-width: 768px) {
+	.bg-verisanat-footer{
+		position: static;
+	}
+	.temel-kutu-fotografi-mobil{
+		margin-left:auto !important;
+		margin-right:auto !important;
+		max-width: 100%;
+		height:auto;
+		margin-bottom: 5px;
+	}
+	.bir-panel-mobil-oge{
+		display:none;
+	}
+	.p-sag-duzenle{
+		padding-right: 0px;
+	}
+	.p-sol-duzenle{
+		padding-left: 0px;
+	}
+	.col-auto{
+		min-width:330px;
+	}
+	.mobil-ust-bosluk{
+		margin-top: 15px;
+	}
+	.mobil-ortala{
+		margin-right: auto !important;
+		margin-left: auto !important;
+		text-align:center !important;
+	}
+	.mobil-ortala-dikey{
+		margin-top: auto !important;
+		margin-bottom: auto !important;
+	}
+	.mobil-alt-sabit{
+		position: static;
+		margin-top: auto !important;
+		background-color: #fa6161;
+		background-image: linear-gradient(90deg, #fa6161 0%, #F76B1C 100%);
+		color: #fff;
+	}
+    .mobil-ust-sabit{
+		position: fixed;
+		top:0px;
+        width:100vw;
+		background-color: #fa6161;
+		background-image: linear-gradient(90deg, #fa6161 0%, #F76B1C 100%);
+		color: #fff;
+        z-index: 1050;
+	}
+	.mobil-ust-link{
+		padding-top:55px;
+		position:absolute;
+		z-index:1050;
+	}
+	.mobil-yazi{
+		padding-left:1rem !important;
+		padding-right:1rem !important;
+    }
+    .mobil-mt-1{
+        margin-top: .25rem !important;
+    }
+    .mobil-mt-2{
+        margin-top: .5rem !important;
+    }
+    .mobil-mb-1{
+        margin-bottom: .25rem !important;
+    }
+    .mobil-mb-2{
+        margin-bottom: .5rem !important;
+    }
+    .mobil-modal-kullanim{
+        max-width: calc(100% - 10.5rem);
+    }
+    .dt-buttons{
+        display:none;
+    }
+    .dataTables_length{
+        margin-top:12px;
+        display:block;
+        margin-right:0px;
+        margin-left:0px;
+    }
+    .yukari-cik-butonu{
+        position: fixed;
+        top:8%;
+        left:5%;
+        display:none;
+    }
+    .mobil-p-sol-duzenle{
+        padding-left:15px !important;
+    }
+    .uyarilar{
+        transform:none;
+        left:none;
+    }
+    .mobil-hizli-erisim{
+        width:100vw;
+        height:auto;
+        display: flex;
+    }
+    .mobil-hizli-erisim-logo{
+        width:59vw;
+        height:4.5vh;
+        display:inline-flex;
+        margin-left:auto;
+        margin-right:auto;
+        margin-top:5px;
+    }
+    .mobil-hizli-erisim-orta{
+        width:75vw;
+        display: inline-flex;
+        margin-left:auto;
+        margin-right:auto;
+    }
+    .mobil-hizli-erisim-bas{
+        width:12.5vw;
+        display:inline-flex;
+    }
+    .mobil-hizli-erisim-son{
+        width:12.5vw;
+        float:right;
+        display: flex;
+    }
+}
+@media (min-width: 768px) {
+    body{
+        padding-top:5rem;
+    }
+    body.ap{
+        padding-top:unset;
+    }
+	.bg-verisanat-footer{
+		position: static;
+	}
+	.p-sag-duzenle{
+		padding-right:7.5px !important;
+	}
+	.p-sol-duzenle{
+		padding-left:7.5px !important;
+	}
+	.ust-aralik{
+		margin-top:6%;
+    }
+    .container.arayuz-sabit{
+        padding-right:0px !important;
+        padding-left:0px !important;
+    }
+    .row.arayuz-sabit{
+        margin-left:0px !important;
+        margin-right:0px !important;
+    }
+    div[class*="arayuz-sabit"]{
+        padding-left:0px !important;
+        padding-right:0px !important;
+    }
+    .mobil-modal-buton{
+        visibility: hidden;
+    }
+    .dataTables_length{
+        display:inline;
+        margin-right:10px;
+        margin-left:10px;
+    }
+    .yukari-cik-butonu{
+        position: fixed;
+        top:11%;
+        left:16%;
+    }
+}
+@media (min-width: 1300px){
+    
+    .card-columns.instagram{
+        column-count: 6;
+    }
+}
+@font-face{
+  font-family: 'Montserrat';
+  src: local('Montserrat'), url('https://fonts.googleapis.com/css?family=Montserrat') format('truetype');
+  font-display:swap;
+}
+.html-test-alani{
+    min-height:80vh;
+    
+}
+.acik{
+    visibility: visible;
+}
+.kapali{
+    visibility: hidden; 
+}
+body{
+  font-family: "Montserrat", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 12px;
+  -webkit-font-smoothing: antialiased;
+  color: #2c2c2c;
+  background-color: transparent;
+  overflow-x:hidden;
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+  justify-content: space-between;
+}
+img{
+  transition: transform 1s ease;
+}
+img:hover{
+  transform: scale(1.04);
+}
+.iletiler{
+    position:fixed;
+    top:20%;
+    left:45%;
+    transform: translate(-20%, -30%);
+    min-height: 120px;
+    min-width: 280px;
+    max-width:400px;
+    z-index: 1080;
+}
+.ileti{
+    min-width: 233px;
+}
+.toast{
+    border:none;
+}
+.toast-header{
+    border-radius: 0.25rem;
+    background-color: rgba(255, 30, 30, 0.63);
+    color:#000;
+}
+.toast-body{
+    background-color: rgba(255, 30, 30, 0.63);
+    border-radius: 0.25rem;
+    color:#000;
+}
+.z-normal{
+    z-index:1000;
+}
+.kutu-ici-buton{
+	height:20px;
+}
+.container{
+    margin-top:unset;
+}
+.container-fluid{
+    margin-top:auto;
+}
+.container-fluid.ap{
+    margin-top:unset;
+}
+.container.klasik-panel .list-group-item{
+	padding: .25rem 1rem;
+}
+.inceliste .list-group-item{
+	padding: .25rem 1rem;
+}
+.row.ap-ekran{
+	margin-right:30px;
+	margin-left:30px;
+}
+.bg-verisanat-acik{
+	background: rgb(215,67,8);
+	background: radial-gradient(circle, rgba(215,67,8,0.8) 0%, rgba(237,21,58,0.8) 35%, rgba(255,106,0,0.8) 100%);
+	color:#fff;
+}
+.bg-verisanat-acik:hover{
+    color:#ffc4a4;
+}
+.bg-verisanat-kapali{
+	background: rgb(255,70,38);
+	background: linear-gradient(90deg, rgba(255,70,38,0.529832001159839) 0%, rgba(252,144,114,0.7791317210477942) 76%, rgba(255,103,38,0.6586835417760855) 100%);
+	color:#e7ecee;
+}
+.bg-verisanat-kapali:hover{
+	background: #f0e5e0;
+	color:#f45338;
+}
+.bg-verisanat-footer{
+	background-image: linear-gradient(to top, #d5d4d0 0%, #d5d4d0 1%, #eeeeec 31%, #efeeec 75%, #e9e9e7 100%);
+	bottom: 0;
+    width: 100%;
+}
+.bg-verisanat-footer-ap{
+	background-image: linear-gradient(to top, #d5d4d0 0%, #d5d4d0 1%, #eeeeec 31%, #efeeec 75%, #e9e9e7 100%);
+    margin-top:auto !important;
+    display:flex;
+    width: 100%;
+    min-height: 179px;
+    color: #fb4d17 !important;
+}
+.image_picker_image{
+    max-width: 100px;
+}
+.bg-verisanat-mavi-mavi{
+	background-image: linear-gradient(to top, #00c6fb 0%, #005bea 100%);
+}
+.bg-verisanat-turuncu-sari-acik{
+    background-image: radial-gradient( circle farthest-corner at 93.8% 11.4%,  rgba(255,194,117,1) 0%, rgba(255,151,15,1) 100.3% );
+}
+.yazi{
+    font-family:monospace;
+	font-size:medium;
+}
+.yazi.yazi-sayfalar{
+    font-family: inherit;
+    font-size: 1rem;
+}
+.dik-sutun{
+	min-height:393px;
+}
+.ap-kutular{
+    min-height:200px;
+}
+.dik-sutun-flex{
+    min-height:392px;
+}
+.dik-sutun-bir-panel{
+	min-height:590px;
+}
+.mobil-yapiskan-baslik{
+    top: 2px; min-width:175px;
+}
+.uyarilar{
+	z-index: 1060;
+	height: auto;
+	float: none;
+	width: auto;
+	margin: auto;
+}
+input,
+input::-webkit-input-placeholder {
+    font-size: 12px;
+    /* line-height: 1.42; */
+}
+.cok-kucuk-yazi{
+    font-size: 9px;
+}
+.kucuk-yazi{
+    font-size: 10px;
+}
+.ozel-tablo thead th{
+    position: sticky;
+    top: 5.68%;
+    z-index: 1020;
+    background-color:#fff;
+}
+
+.list-group-item-dark{
+	border: 1px solid rgba(244, 80, 29, 0.27);
+	font-size: 12px;
+	font-style: italic;
+	font-weight: 300;
+}
+.list-group-item-dark:hover{
+	background: #f0e5e0;
+	color:#f45338;
+}
+.list-group-item-dark.list-group-item-action:hover{
+	background: #f0e5e0;
+	color:#f45338;
+}
+header{
+	background: rgb(255, 255, 255);
+	color:rgb(255, 0, 0);
+}
+header a{
+	transition:all .3s ease 0s;
+	transition-property: all;
+	transition-duration: 0.3s;
+	transition-timing-function: ease;
+	transition-delay: 0s;
+}
+header-ap{
+	background: #fff;
+    color:rgb(215,67,8);
+    scrollbar-width: thin;
+    overflow-x: scroll;
+}
+footer{
+	min-height:50px;
+}
+.navbar-toggler-icon{
+	background: rgb(215,67,8);
+	background: linear-gradient(90deg, rgba(215,67,8,1) 0%, rgba(237,21,58,1) 35%, rgba(255,106,0,1) 100%);
+	color:#fff;
+}
+.navbar-toggler{
+	padding-right: -40px;
+}
+.degistir{
+	background: rgb(215,67,8);
+	background: radial-gradient(circle, rgba(215,67,8,0.3001401244091386) 0%, rgba(237,21,58,0.3533614129245448) 35%, rgba(255,106,0,0.20210090872286413) 100%);
+	transition-property: all;
+	transition-duration: 0.3s;
+	transition-timing-function: ease;
+	transition-delay: 0s;
+}
+.degistirme{
+	background: #fff;
+}
+.btn-outline-dark{
+	color: #ff1810;
+	border-color: #ff0000;
+}
+.btn-outline-dark:hover{
+	color: #fff;
+	background-color: #fd5a5a;
+	border-color: #f95e5e;
+}
+.btn-outline-warning:hover {
+    color: #eceef0;
+    background-color: #ffc107;
+	border-color: #ffc107;
+}
+.menu-acaip{
+	align-self: flex-start;
+	z-index:1030;
+	top:57px;
+	height: auto;
+	float:right;
+	width:25%;
+}
+.menu-acaip-ap{
+    position: fixed;
+    display: flex;
+	z-index:1030;
+	top:57px;
+	height: auto;
+	float:left;
+	width:15%;
+}
+.ekran-acaip-ap{
+    position: relative;
+    display: flex;
+	z-index:1030;
+	top:32px;
+	height: auto;
+	float:right;
+	width:85%;
+}
+.dt-buttons{
+    margin-top: .25rem !important;
+    float:none;
+}
+.dataTables_filter{
+    display:inline-flex;
+    float: right;
+}
+.butonlar{
+    display:inline-flex;
+    float:left;
+    margin-left:10px;
+    margin-right:10px;
+    margin-top: .25rem !important;
+}
+.secimyok{
+	-webkit-touch-callout: none;
+	  -webkit-user-select: none;
+	   -khtml-user-select: none;
+		 -moz-user-select: none;
+		  -ms-user-select: none;
+			  user-select: none;
+}
+.kucuk-ekran-yasla{
+	flex-wrap: wrap;
+	display: flex;
+}
+.card-columns{
+	column-gap:7.5px;
+}
+.card-columns .card{
+	margin-bottom:.5rem;
+}
+.nav > a:hover{
+	color: #353434;
+}
+a{
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  a:hover,a:focus{
+    color: inherit;
+    text-decoration: none;
+  }
+
+.logo-yuvarla{
+	border-radius: .45rem!important;
+}
+.logo-header-boyutu{
+	width:40px;
+	height:40px;
+}
+.logo-mobil-boyutu{
+	width: 30px;
+	height: 30px;
+}
+.logo-mobil-yuvarla{
+	border-radius: 0.30rem !important;
+}
+label{
+  font-weight: normal;
+}
+.ufak-arka-plan{
+	color: #f25834;
+	border-color: #f45338;
+}
+.btn-sm{
+    padding: .25rem .5rem;
+    font-size: .675rem;
+    line-height: 1.0;
+    border-radius: .2rem;
+}
+.p-sol-yok{
+	padding-left:0px !important;
+}
+.p-sag-yok{
+	padding-right:0px !important;
+}
+.aciklama-kucuk{
+    min-height:30vh;
+    display: flex;
+}
+.aciklama-normal{
+    min-height:50vh;
+    display: flex;
+}
+.aciklama-buyuk{
+    min-height: 80vh;
+    display: flex;
+}

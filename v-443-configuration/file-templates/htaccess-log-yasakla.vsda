@@ -1,0 +1,12 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine off
+</IfModule>
+<FilesMatch "\.(?:log)$">
+    Order deny,allow
+    Deny from all
+    Allow from localhost
+    Allow from 127.0.0.1
+</FilesMatch>
+<FilesMatch "\.(log)$">
+Require local
+</FilesMatch>

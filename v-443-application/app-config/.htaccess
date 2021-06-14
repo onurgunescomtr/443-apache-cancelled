@@ -1,0 +1,23 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine off
+</IfModule>
+<Files "application-configuration.json">
+require all denied
+require host localhost
+require ip 127.0.0.1
+</Files>
+<Files "application-configuration.json">
+        Order Deny,Allow
+        Deny from all
+        Allow from localhost
+        Allow from 127.0.0.1
+</Files>
+<Files "modul-islemler.json">
+        Order Deny,Allow
+        Deny from all
+        Allow from localhost
+        Allow from 127.0.0.1
+</Files>
+<FilesMatch "\.(json|vsda)$">
+Require local
+</FilesMatch>

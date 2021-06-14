@@ -1,0 +1,9 @@
+<FilesMatch "\.(?:sql)$">
+Order allow,deny
+Deny from all
+Allow from localhost
+Allow from 127.0.0.1
+</FilesMatch>
+<FilesMatch "\.(sql)$">
+Require local
+</FilesMatch>

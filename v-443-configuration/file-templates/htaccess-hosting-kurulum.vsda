@@ -1,0 +1,22 @@
+Options All -Indexes +FollowSymLinks -MultiViews
+IndexIgnore *
+FileETag MTime Size
+<FilesMatch "\.(ico|pdf|flv|jpg|jpeg|png|gif|js|css)$">
+Header unset Last-Modified
+</FilesMatch>
+<FilesMatch "\.(ico|pdf|flv|jpg|jpeg|png|gif|js|css)$">
+Header set X-Content-Type-Options nosniff
+</FilesMatch>
+<FilesMatch "\.(json)$">
+Require local
+</FilesMatch>
+#Header set Access-Control-Allow-Origin "https://www.verisanat.com/"
+RewriteEngine On
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !.*\.(ico|gif|jpg|jpeg|png|js|css)
+
+RewriteRule ^(.*)$ /index.php [L,QSA]
+
+AddDefaultCharset UTF-8
