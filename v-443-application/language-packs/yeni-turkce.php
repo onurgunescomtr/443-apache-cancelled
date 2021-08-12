@@ -44,4 +44,7 @@ $ceviri = array(
 $text_ceviri = array(
     'tanim' => 'tanımlar paragraflar'
 );
+$uri_ceviri = [
+    'hello' => 'merhaba'
+];
 ?>

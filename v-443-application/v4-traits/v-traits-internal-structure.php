@@ -51,7 +51,8 @@ trait InternalStructure{
      */
     private array $internalClasses = [
         'contact' => 'ContactUs',
-        'about' => 'AboutThisApp'
+        'about' => 'AboutThisApp',
+		'publications' => 'Publications001'
     ];
 
     /**
@@ -69,5 +70,16 @@ trait InternalStructure{
      * @var string $htmlDefaultScreen
      */
     private string $htmlDefaultScreen = 'main-page';
+
+    /**
+     * @method injectDefaultClasses()
+     * @return void
+     */
+    private function injectDefaultClasses(): void
+    {
+        $this->internalClasses[\VTS\App::getApp('contactUri')] = 'ContactUs';
+
+        $this->internalClasses[\VTS\App::getApp('aboutUri')] = 'AboutThisApp';
+    }
 }
 ?>

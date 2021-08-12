@@ -6,18 +6,18 @@
  * Object oriented, strongly typed, up to date software in modular structure for 
  * creating web applications. Designed and documented for developers.
  * 
- * Release VTS.443.211 - Open Source Package - MPL 2.0 Licensed.
+ * Release VTS.443.222 - Open Source Package - MPL 2.0 Licensed.
  * 
  * https://onurgunescomtr@bitbucket.org/onurgunescomtr/verisanat-v.4.git
  * https://github.com/onurgunescomtr/verisanat
  * 
  * @package		Verisanat v.4.4.3 "Rembrandt"
- * @subpackage  VTS.443.211 [Tr]Verisanat Tam Sürüm - [En]Verisanat Full Version 
+ * @subpackage  VTS.443.222 [Tr]Verisanat Tam Sürüm - [En]Verisanat Full Version 
  * 
  * @author		Onur Güneş  https://www.facebook.com/onur.gunes.developer
  *                          https://www.twitter.com/onurgunescomtr
  *                          mailto:verisanat@outlook.com
- *                          https://www.verisanat.com/iletisim
+ *                          https://www.verisanat.com/contact
  * 
  * @copyright	Copyright (c) 2012 - 2021 Onur Güneş
  *              https://www.verisanat.com
@@ -373,7 +373,8 @@ final class SystemSetup{
     }
 
     /**
-     * Yönetim panelin işlem adresini atar. Oturum işlevini düzenler.
+	 * [EN] Defines user and login related address URIs. Regulates session functionality.
+     * [TR] Yönetim panelin işlem adresini atar. Oturum işlevini düzenler.
      * 
      * @method setManagement() 
      * @return void
@@ -388,6 +389,10 @@ final class SystemSetup{
 
         define('UUI',$this->setup->uui);
 
+		define('LOGINURI',$this->setup->loginURI);
+
+		define('UVURI',$this->setup->accountVerificationURI);
+
         $tx = '00'; $yx = '00';
 
         // console session rumble
@@ -395,6 +400,8 @@ final class SystemSetup{
         $sn = 'VS62' . (string)$tx . '43' . (string)$yx;
 
         session_name($sn);
+
+        define('SUDOSESSION',$this->setup->suSessionName);
     }
 
     /**
@@ -515,7 +522,7 @@ final class SystemSetup{
 				$this->dbUser = false;
 			}
 
-			\VTS\Debug::see($report);
+			\VTS\Debug::see($report . PHP_EOL . $e->getMessage());
 		}
 
 		unset($testDb);

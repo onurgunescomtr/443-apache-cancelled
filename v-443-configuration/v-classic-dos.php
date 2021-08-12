@@ -6,18 +6,18 @@
  * Object oriented, strongly typed, up to date software in modular structure for 
  * creating web applications. Designed and documented for developers.
  * 
- * Release VTS.443.211 - Open Source Package - MPL 2.0 Licensed.
+ * Release VTS.443.222 - Open Source Package - MPL 2.0 Licensed.
  * 
  * https://onurgunescomtr@bitbucket.org/onurgunescomtr/verisanat-v.4.git
  * https://github.com/onurgunescomtr/verisanat
  * 
  * @package		Verisanat v.4.4.3 "Rembrandt"
- * @subpackage  VTS.443.211 [Tr]Verisanat Tam Sürüm - [En]Verisanat Full Version 
+ * @subpackage  VTS.443.222 [Tr]Verisanat Tam Sürüm - [En]Verisanat Full Version 
  * 
  * @author		Onur Güneş  https://www.facebook.com/onur.gunes.developer
  *                          https://www.twitter.com/onurgunescomtr
  *                          mailto:verisanat@outlook.com
- *                          https://www.verisanat.com/iletisim
+ *                          https://www.verisanat.com/contact
  * 
  * @copyright	Copyright (c) 2012 - 2021 Onur Güneş
  *              https://www.verisanat.com
@@ -36,14 +36,12 @@
 
 namespace VTS\System;
 
-use VTS\Scribe;
-
 final class VerisanatDosException extends \Exception{
 
 }
 
 /**
- * When extending Dos, you should use file names in the following format:
+ * When extending Verisanat, you should use file names in the following format:
  * file-name.ext  /  word + dash + word + . + extension
  * 
  * @example $dos = new Dos;
@@ -156,8 +154,8 @@ final class Dos{
      * @var array $zamanOlculer
      */
     private array $zamanOlculer = array(
-        'older' => 'greaterThan',
-        'younger' => 'lessThan',
+        'younger' => 'greaterThan',
+        'older' => 'lessThan',
         'same' => 'equalTo',
         'different' => 'notEqualTo'
     );
@@ -382,12 +380,12 @@ final class Dos{
             break;
             case 'jpg':
 
-                    // exif contents filtered.
+                    // exif içerik temizleme
 
             break;
             case 'jpeg':
 
-                    // exif contents filtered.
+                    // exif içerik temizleme
                     
             break;
             case 'sql':
@@ -585,11 +583,11 @@ final class Dos{
     }
 
     /**
-     * for testing / dev purposes, quick set file name without checking
+     * for testing purposes, quick set file name
      * 
      * seri dosya yaratımı ve yazma işlemleri için kullanılır.
      * genellikle test amaçlı kullanılır. kontrol yoktur.
-     * (  newFile() ve fileType() da kullanilabilir ) 
+     * (  newFile() ve fileType() de kullanilabilir ) 
      * 
      * @method quickFile()
      * @param string $a full file name
@@ -601,8 +599,6 @@ final class Dos{
         $this->activeFileName = $this->activeFolderName . '/' . $a;
 
         isset($u) ? $this->extension = $u : $this->extension = null;
-
-		Scribe::sysLog('Dos - quickFile used, file name: ' . $a);
 
         return $this;
     }
@@ -630,9 +626,8 @@ final class Dos{
     }
 
     /**
-     * change directory - can be used to create also
-     * 
-     * aktif olarak kullanılacak klasor
+     * [EN] Change directory - can be used to create also
+     * [TR]aktif olarak kullanılacak klasor
      * 
      * @method cd()
      * @param string $yol ust-klasor/alt-klasor - klasor
@@ -643,7 +638,7 @@ final class Dos{
     {
         if ($create){
 
-            isset($path) && !$this->folderExists($path) ? mkdir(BASE . '/' . $path,0755,true) : \VTS\Http::guide(ADDRESS,'bilgi','Process stopped. Folder already exists.');
+            isset($path) && !$this->folderExists($path) ? mkdir(BASE . '/' . $path,0755,true) : \VTS\Http::guide(ADDRESS,'warn','Process stopped. Folder already exists.');
 
             $this->activeFolderName = BASE . '/' . $path;
         }else{
@@ -773,20 +768,6 @@ final class Dos{
 
         $tipi = $d['extension'];
 
-        /* $tip = null;
-
-        foreach($this->dosyatipleri as $h => $v){
-
-            if (mime_content_type($dosyaadi) === $h){
-
-                $tip = $v;
-
-                break;
-            } 
-        } */
-
-        /* isset($tip) && $tip === $tipi[1] && !isset($tipi[2]) ? $this->fileType = $tip : $this->write(new KontrolYapi('Dos - ayikla',$this->activeFileName . '-' . 'dosya uzantısı dosya tipi ile eşleşmiyor.',8,5),'log'); */
-
         $this->fileType($tipi);
 
         return $this;
@@ -809,7 +790,7 @@ final class Dos{
 
         $this->cd($secondFolder); $ikiDosyalari = $this->dir('*.*'); $ikiDosyalari = array_map('basename',$ikiDosyalari);
 
-        $this->distinctFiles = $folderVersion ? array_diff_assoc($birDosyalari,$ikiDosyalari) : array_diff($ikiDosyalari,$birDosyalari);
+        $folderVersion ? $this->distinctFiles = array_diff_assoc($birDosyalari,$ikiDosyalari) : $this->distinctFiles = array_diff($ikiDosyalari,$birDosyalari);
 
         if ($getHtmlList){
 
@@ -869,8 +850,6 @@ final class Dos{
      */
     public function compareFiles(string $criteria,string $measure): bool
     {
-        $sonuc = false;
-
         if (isset($this->dosyaDizi)){
 
             switch($criteria):
@@ -879,21 +858,30 @@ final class Dos{
 
                     require_once BASE . '/' . RELEASE . '-external-sources' . '/' . 'Carbon.php';
 
-                    $birinciDosya = \Carbon\Carbon::parse(date('d-m-Y H:i:s',filemtime($this->activeFolderName . '/' . $this->dosyaDizi[0])));
+                    $anchorFile = \Carbon\Carbon::parse(date('d-m-Y H:i:s',filemtime($this->activeFolderName . '/' . $this->dosyaDizi[0])));
 
-                    $kiyaslanacakDosya = \Carbon\Carbon::parse(date('d-m-Y H:i:s',filemtime($this->activeFolderName . '/' . $this->dosyaDizi[1])));
+                    $fileGettingCompared = \Carbon\Carbon::parse(date('d-m-Y H:i:s',filemtime($this->activeFolderName . '/' . $this->dosyaDizi[1])));
 
-                    if ($birinciDosya->{$this->zamanOlculer[$measure]}($kiyaslanacakDosya)){
+					/* \VTS\Debug::see('Adı: ' . $this->dosyaDizi[0]); \VTS\Debug::see($anchorFile); 
+					
+					\VTS\Debug::see('Adı: ' . $this->dosyaDizi[1]); \VTS\Debug::see($fileGettingCompared);
+
+					\VTS\Debug::see($anchorFile->{$this->zamanOlculer[$measure]}($fileGettingCompared));
+					
+					exit; */
+
+                    if ($anchorFile->{$this->zamanOlculer[$measure]}($fileGettingCompared)){
                         
-                        $sonuc = true;
-                    }
+                        return true;
+                    }else{
+
+						return false;
+					}
 
                 break;
 
             endswitch;
         }
-
-        return $sonuc;
     }
 
     /**

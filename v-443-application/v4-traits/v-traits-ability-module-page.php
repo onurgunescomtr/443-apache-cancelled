@@ -6,18 +6,18 @@
  * Object oriented, strongly typed, up to date software in modular structure for 
  * creating web applications. Designed and documented for developers.
  * 
- * Release VTS.443.211 - Open Source Package - MPL 2.0 Licensed.
+ * Release VTS.443.222 - Open Source Package - MPL 2.0 Licensed.
  * 
  * https://onurgunescomtr@bitbucket.org/onurgunescomtr/verisanat-v.4.git
  * https://github.com/onurgunescomtr/verisanat
  * 
  * @package		Verisanat v.4.4.3 "Rembrandt"
- * @subpackage  VTS.443.211 [Tr]Verisanat Tam Sürüm - [En]Verisanat Full Version 
+ * @subpackage  VTS.443.222 [Tr]Verisanat Tam Sürüm - [En]Verisanat Full Version 
  * 
  * @author		Onur Güneş  https://www.facebook.com/onur.gunes.developer
  *                          https://www.twitter.com/onurgunescomtr
  *                          verisanat@outlook.com
- *                          https://www.verisanat.com/iletisim
+ *                          https://www.verisanat.com/contact
  * 
  * @copyright	Copyright (c) 2012 - 2021 Onur Güneş
  *              https://www.verisanat.com
@@ -41,127 +41,95 @@ Version\VersionCheck::dkontrol(__FILE__,'4.4.3');
 trait AbilityModulePage{
 
     /**
-     * Html dosya test fonksiyonu. Dos kullanmaz
+     * [TR] HTML parçaları (body ve head içermeyen) Dos kullanarak okur ve içeriğini döndürür
+     * [EN] reads and returns HTML (except body and head) strings using Dos class
      * 
-     * @method htmlTest() istenen tam html dosyasını okur ve dondurur
-     * @param string $dosya dosya adı ve uzantısı  test-dosyasi.html
-     * @return string $testortami
+     * @method useHtmlFile()
+     * @param string $fileName
+     * @return string
      */
-    public function htmlTest(string $dosya = null): string
-    {
-        $this->testortami = isset($dosya) && file_exists($this->testortamyolu . $dosya) ? file_get_contents($this->testortamyolu . $dosya) : null;
-
-        return $this->testortami;
-    }
-
-    /**
-     * HTML parçaları (body ve head içermeyen) Dos kullanarak okur ver içeriğini döndürür
-     * 
-     * @method htmlKullan()
-     * @param string $dosyaadi dosya adı
-     * @return string $parca
-     */
-    public function htmlKullan(string $dosyaadi = null): string
+    public function useHtmlFile(string $fileName = null): string
     {
         $dos = new System\Dos;
 
-        if (isset($dosyaadi) && $dos->cd(RELEASE . '-publications'. '/' . 'html-units')->fileExists($dosyaadi)){
+        if (isset($fileName) && $dos->cd(RELEASE . '-publications'. '/' . 'html-units')->fileExists($fileName)){
 
-            $dadi = explode('.',$dosyaadi);
+            $tempFileName = explode('.',$fileName);
 
-            $dadi = !isset($dadi[2]) ? $dadi[0] : 'gecersiz-islem';
+            $tempFileName = !isset($tempFileName[2]) ? $tempFileName[0] : 'gecersiz-islem';
 
-            $this->ekranekleri[$dadi] = $dos->f($dosyaadi)->read()->getData();
+            $this->screenAdditions[$tempFileName] = $dos->f($fileName)->read()->getData();
 
-            return $this->ekranekleri[$dadi];
+            return $this->screenAdditions[$tempFileName];
         }
 
         unset($dos);
 
-        throw new System\VerisanatDosException('Dosya bulunamadı: ' . $dosyaadi);
+        throw new System\VerisanatDosException('Dosya bulunamadı: ' . $fileName);
     }
 
     /**
-     * göndeirlen array de bulunan sabit değişkenleri yeni içerikleriyle değiştirir.
+     * [TR] Gönderilen array de bulunan sabit değişkenleri yeni içerikleriyle değiştirir.
+     * [EN] Changes exact page element with array html key value contents
      * 
-     * @method yapiDegisimler()
-     * @param array $bunlar array(0 => array('degiskenadi','icerik'))
+     * array(0 => array('variableName','stringData'))
+     * 
+     * @method modifyPageElement()
+     * @param array $modItems
      * @return void
      */
-    public function yapiDegisimler(array $bunlar): void
+    public function modifyPageElement(array $modItems): void
     {
-        foreach($bunlar as $tek){
+        foreach($modItems as $tek){
             
             $this->vui->changePageUnit($tek[0],$tek[1]);
         }
     }
 
     /**
-	 * Creates warning or info level messages reported from modules, internal apps.
-	 * 
-	 * - This is a public function just because of the verbosely written modules. Can be used in a module
-	 * if module id function defined. Otherwise its been used auto by module controller.
-	 * 
-	 * - Some functions like this left in [TR] Turkish lang because they are almost invisible to a developer.
-	 * 
-	 * yönlendirmeden yada işlem sonucundan gelen uyarı yada iletileri yazdırır yönlendirir
-	 * 
-     * @method modulbilgiver()
+	 * @method setAppModuleReport()
      * @return void
      */
-    public function modulBilgiVer(): void
+    public function setAppModuleReport(): void
     {
         if (isset($_SESSION['warning_type'])){
 
-            $this->uyaritipi = $_SESSION['warning_type'];
+            $this->reportType = $_SESSION['warning_type'];
             
             unset($_SESSION['warning_type']);
 
-            $this->bilgi = $_SESSION['guide_information'];
+            $this->reportInfo = $_SESSION['guide_information'];
             
             unset($_SESSION['guide_information']);
 
-            $bir = '<div class="sticky-top uyarilar text-center alert alert-success alert-dismissible fade show" role="alert">
-            <strong>Tamamlandı: </strong> %s
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true"><i class="far fa-times-circle mobil-mt-1"></i></span></button>
-            </div>';
-            $iki = '<div class="sticky-top uyarilar text-center alert alert-warning alert-dismissible fade show" role="alert">
-            <strong>Uyarı: </strong> %s
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true"><i class="far fa-times-circle mobil-mt-1"></i></span></button>
-            </div>';
+            $this->appModuleReport = $this->reportType === 'warn' ? sprintf($this->htmlModuleAppReportWarn,$this->frame->translate('warning_report'),$this->reportInfo) : sprintf($this->htmlModuleAppReportError,$this->frame->translate('error_report'),$this->reportInfo);
 
-            $this->bilgiver = $this->uyaritipi == 'bilgi' ? sprintf($bir,$this->bilgi) : sprintf($iki,$this->bilgi);
-
-            Http::forward($this->bilgiver);
+            Http::forward($this->appModuleReport);
         }
 
-        $this->modulbilgikutulari = $_SESSION['modulbilgikutulari'] ?? null;
+        $this->appModuleToastBox = $_SESSION['appModuleToastBox'] ?? null;
         
-        unset($_SESSION['modulbilgikutulari']);
+        unset($_SESSION['appModuleToastBox']);
     }
 
     /**
-	 * Creates toast message to page header from modules.
+	 * [EN] Creates toast message to page header from modules. Can be used in modules, both main page and interface functions.
+	 * [TR] Modül bilgi kutusuna verilen bilgiyi yazar.
 	 * 
-	 * - Can be used in modules, both main page and interface functions.
-	 * 
-	 * toast iletiyi yazar
-	 * 
-     * @method modulbilgi()
-     * @param string $bilgi
-     * @param string $madi modul adı. İşlem başlığının yanına modul adını verir.
+     * @method setModuleToast()
+     * @param string $information
+     * @param string $moduleName
      * @return void
      */
-    public function modulbilgi(string $bilgi,string $madi = null): void
+    public function setModuleToast(string $information,string $moduleName = null): void
     {
-        if (isset($_SESSION['modulbilgikutulari'])){
+        if (isset($_SESSION['appModuleToastBox'])){
 
-            $_SESSION['modulbilgikutulari'] .= isset($madi) ? sprintf($this->ileti,' - ' . $madi,$bilgi) : sprintf($this->ileti,null,$bilgi);
+            $_SESSION['appModuleToastBox'] .= isset($moduleName) ? sprintf($this->htmlModuleToast,' - ' . $moduleName,$information) : sprintf($this->htmlModuleToast,null,$information);
         }else{
 
-            $_SESSION['modulbilgikutulari'] = isset($madi) ? sprintf($this->ileti,' - ' . $madi,$bilgi) : sprintf($this->ileti,null,$bilgi);
+            $_SESSION['appModuleToastBox'] = isset($moduleName) ? sprintf($this->htmlModuleToast,' - ' . $moduleName,$information) : sprintf($this->htmlModuleToast,null,$information);
         }
-        
     }
 
     /**
@@ -186,7 +154,7 @@ trait AbilityModulePage{
      */
     public function formBasligiVer(string $hedef): string
     {
-        return sprintf($this->klasikFormBasligi,$hedef);
+        return sprintf($this->classicFormHead,$hedef);
     }
 
     /**
@@ -198,7 +166,7 @@ trait AbilityModulePage{
      */
     public function aramaFormBasligiVer(string $hedef): string
     {
-        return sprintf($this->aramaFormBasligi,$hedef);
+        return sprintf($this->searchFormHead,$hedef);
     }
 }
 ?>

@@ -6,18 +6,18 @@
  * Object oriented, strongly typed, up to date software in modular structure for 
  * creating web applications. Designed and documented for developers.
  * 
- * Release VTS.443.211 - Open Source Package - MPL 2.0 Licensed.
+ * Release VTS.443.222 - Open Source Package - MPL 2.0 Licensed.
  * 
  * https://onurgunescomtr@bitbucket.org/onurgunescomtr/verisanat-v.4.git
  * https://github.com/onurgunescomtr/verisanat
  * 
  * @package		Verisanat v.4.4.3 "Rembrandt"
- * @subpackage  VTS.443.211 [Tr]Verisanat Tam Sürüm - [En]Verisanat Full Version 
+ * @subpackage  VTS.443.222 [Tr]Verisanat Tam Sürüm - [En]Verisanat Full Version 
  * 
  * @author		Onur Güneş  https://www.facebook.com/onur.gunes.developer
  *                          https://www.twitter.com/onurgunescomtr
  *                          verisanat@outlook.com
- *                          https://www.verisanat.com/iletisim
+ *                          https://www.verisanat.com/contact
  * 
  * @copyright	Copyright (c) 2012 - 2021 Onur Güneş
  *              https://www.verisanat.com
@@ -85,14 +85,14 @@ trait CommonFrameElements{
      * @var string $headbir
      */
     private string $headbir = '<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
-    <meta name="robots" content="noimageindex,archive,index,follow,translate">
+    <meta name="robots" content="archive,index,follow,translate">
     <meta property="fb:app_id" content="%s">
     <meta property="og:locale" content="'. LANGL .'">
     <meta property="og:email" content="'. CONTACT .'">
     <meta property="og:country-name" content="' . LANG . '">
     <meta property="og:site_name" content="'. DOMAIN .'">
-    <meta property="og:image" content="'. ADDRESS . '/' . RELEASE . '-local-image' . '/' . 'uygulama' . '/' . PREFIX. '-temel-logo.png">
-    <link rel="shortcut icon" href="'. ADDRESS . '/' . RELEASE . '-local-image' . '/' . 'uygulama' . '/' . PREFIX . '-web-mobile-icon.png">';
+    <meta property="og:image" content="'. ADDRESS . '/' . 'lokal-gorsel' . '/' . 'uygulama' . '/' . PREFIX. '-temel-logo.png">
+    <link rel="shortcut icon" href="'. ADDRESS . '/' . 'lokal-gorsel' . '/' . 'uygulama' . '/' . PREFIX . '-web-mobile-icon.png">';
     /**
      * @var string $headiki
      */
@@ -113,13 +113,16 @@ trait CommonFrameElements{
     /**
      * @var string $headüc
      */
-    private string $headuc = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous"><script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
-	<link rel="stylesheet" href="'. ADDRESS . '/' . RELEASE . '-css' . '/' . 'css-duzenlemeler.css" type="text/css">
-	<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
-	<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css"/>
-	<script type="text/javascript" src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
-	';
+    private string $headEskiUc = '<script src="'. ADDRESS . '/' . 'external-resources' . '/' . 'jquery' . '/' . 'jquery.351.js"></script>
+    <link rel="stylesheet" href="'. ADDRESS . '/' . 'external-resources' . '/' . 'BS450' . '/' . 'bootstrap.min.css" type="text/css">
+    <link rel="stylesheet" href="'. ADDRESS . '/' . 'external-resources' . '/' . 'fontawesome' . '/' . 'fawesome-582.min.css" type="text/css">
+    <link rel="stylesheet" href="'. ADDRESS . '/' . 'external-resources' . '/' . 'animate.css" type="text/css">
+    <link rel="stylesheet" href="'. ADDRESS . '/' . RELEASE . '-css' . '/' . 'css-duzenlemeler.css" type="text/css">
+    <script src="'. ADDRESS .'/' . 'external-resources' . '/' . 'BS450' . '/' . 'bootstrap.bundle.min.js"></script>
+    <script src="'. ADDRESS .'/' . 'external-resources' . '/' . 'fontawesome' . '/' . 'fontawesome.min.js"></script>
+    <script type="text/javascript" src="'. ADDRESS .'/' . 'external-resources' . '/' . 'slick' . '/' . 'slick.min.js"></script>
+    <link rel="stylesheet" href="'. ADDRESS . '/' . 'external-resources' . '/' . 'slick' . '/' . 'slick.css" type="text/css">
+    <link rel="stylesheet" href="'. ADDRESS . '/' . 'external-resources' . '/' . 'slick' . '/' . 'slick-theme.css" type="text/css">';
     /**
      * @var string $headcopyright
      */
@@ -150,122 +153,138 @@ trait CommonFrameElements{
      */
     public string|null $htmlheadek;
     /**
-     * uygulama temel html head kısmı
+     * HTML head part
      * 
      * @var string $head 
      */
     private string $head;
     /**
-     * @var string $doctype html il satırı verir
+	 * HTML document declaration
+	 * 
+     * @var string $doctype
      */
     private string $doctype = '<!doctype html><html lang="%s"><head><meta charset="utf-8">';
-    /* YAN MENU */
-    /**
-     * birinci tamamlanmış yan menü
-     * 
-     * @var string $yanmenubir 
-     */
-    public string $yanmenubir;
-    /**
-     * @var bool $yanmenukullan yan menü kullanılıyor mu kullanılmıyor mu
-     */
-    public string $yanmenukullan;
-    /**
-     * @var string $yanmenu standart uygulama yan menu ust kısım DEFAULT - %s sticky-top , %s inceliste
-     */
-    public string $yanmenuust = '<div class="col-md-3 d-none d-lg-flex %s %s menu-acaip rounded p-sag-yok p-sol-yok border border-warning shadow dik-sutun-flex"><div class="list-group mx-auto my-auto %s">';
-    /**
-     * @var string $yanmenualt standart uygulama yan menu alt kısım
-     */
-    public string $yanmenualt = '</div></div>';
-    /**
-     * @var string $yanmenulink standart uygulama yan menu linkler href - Yazı(adı)
-     */
-    public string $yanmenulink = '<a class="list-group-item list-group-item-action list-group-item-dark bg-verisanat-kapali mx-auto rounded mb-1" href="%s">%s</a>';
-    /* YAN MENU  */
-    /* HEADER MENU */
-    /**
-     * standart uygulama header alanı kapsayıcı html
-     * 
-     * @var string $headermenuust 
-     */
-    public string $headermenuust = '<header class="d-none d-md-block d-lg-block py-2 fixed-top shadow %s"><div class="container arayuz-sabit"><div class="row flex-nowrap justify-content-between align-items-center">';
-    /**
-     * standart uygulama header alanı kapsayıcı html
-     * 
-     * @var string $headermenualt 
-     */
-    public string $headermenualt = '</div></div></header>';
-    /**
-     * standart uygulama header ön kısım col-2
-     * 
-     * @var array $headeron 
-     */
-    public array $headeron = array(0 => '<div class="col-1">',2 => '</div>');
-    /**
-     * standart uygulama header orta kısım col-8
-     * 
-     * @var array $headerorta 
-     */
-    public array $headerorta = array(0 => '<div class="col-10"><nav class="nav d-flex justify-content-between">',2 => '</nav></div>');
-    /**
-     * standart uygulama header arka kısım col-2
-     * 
-     * @var array $headerarka 
-     */
-    public array $headerarka = array(0 => '<div class="col-1 d-flex align-items-center">',2 => '</div>');
-    /**
-     * standart uygulama header kısmı - moduler çerçeve aktif olduğunda kullanılır.
-     * 
-     * @var string $headertam 
-     */
-    public string $headertam = '<div class="col-12"><nav class="nav d-flex align-items-center">%s</nav></div>';
-    /**
-     * href - adı - standart uygulama header arka kısım düğmele tipi
-     * 
-     * @var string $headerbutontipi 
-     */
-    public string $headerbutontipi = '<a class="btn btn-sm btn-outline-dark" href="%s">%s</a>';
-    /**
-     * href - adı standart uygulama header arka kısım birden fazla düğme tipi
-     * 
-     * @var string $headerbutontipiiki 
-     */
-    public string $headerbutontipiiki = '<a class="btn btn-sm btn-outline-dark ml-1" href="%s">%s</a>';
-    /**
+        /**
      * href - imghref - sabit (-web-mobile-icon.png) standart uygulama header logo tipi, header ön kısımda yer alır
      * 
      * @var string $headerlogo 
      */
     public string $headerlogo = '<a title="Ana Sayfa" href="%s" class="animated fadeInRight mb-4"><img class="logo-yuvarla logo-header-boyutu shadow" src="%s-web-mobile-icon.png"></a>';
     /**
-     * standart uygulama mobil header yapısı. href - %sweb-mobil-icon - mobil header linkleri
-     * 
-     * @var string $headermobilyapi 
-     */
-    public string $headermobilyapi = '<div class="mobil-header text-right %s d-md-none d-lg-none d-sm-block arka-plan-v-header">
-    <div class="mobil-hizli-erisim">
-        <div class="mobil-hizli-erisim-bas"><a href="%s"><img class="animated fadeInLeft float-left ml-3 mt-1 logo-mobil-yuvarla logo-mobil-boyutu" src="%s-web-mobile-icon.png"></a></div>
-        <div class="text-center mobil-hizli-erisim-orta"><img class="mobil-hizli-erisim-logo" src="'. ADDRESS .'/lokal-gorsel/kullanici/'. PREFIX .'-logo-mobil.png"></div>
-        <div class="mobil-hizli-erisim-son"><button class="navbar-toggler pt-1" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon rounded"><i class="fas fa-home mt-1"></i></span></button></div>
-    </div>
-    <div class="collapse navbar-collapse ufak-arka-plan d-lg-none d-md-none arka-plan-v-header" id="navbarCollapse"><ul class="navbar-nav">%s</ul></div></div>';
-    /**
      * title - href - link adı 9002 - pratik sürüm $genelhlink
      * 
      * @var string $headerlink 
      */
     public string $headerlink = '<a class="p-2" title="%s" href="%s">%s</a>';
-    /**
-     * standart uygulama tekil mobil header link yapısı
+	/**
+	 * @var string $userInterfaceName
+	 */
+	public string|null $userInterfaceName = null;
+	/**
+	 * @var string $headCssJs
+	 */
+	private string $headCssJS = '
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+		<link rel="stylesheet" href="'. ADDRESS . '/' . RELEASE . '-css' . '/' . 'css-' . '443' . '-default.css" type="text/css">
+	';
+	/**
+	 * @var string $newHeader
+	 */
+	private string $htmlHeaderContainer443 = '
+		<header class="py-3 mb-1 border-bottom">
+			<div class="container-fluid d-grid align-items-center header-443">
+				<div class="dropdown">
+					<a href="%s" class="d-flex align-items-center mb-sm-0 mb-lg-0 fs-4 dropdown-toggle" id="dropdownNavLink" data-bs-toggle="dropdown">
+						<img class="logo shadow" src="' . ADDRESS . '/' . RELEASE . '-local-images' . '/' . '%s-web-mobile-icon.png">
+					</a>
+					<ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownNavLink">
+						%s
+					</ul>
+				</div>
+				<div class="d-flex align-items-center">
+					%s
+				</div>
+				<div class="d-flex flex-row-reverse dropdown">
+						<a href="#" class="d-block link-dark text-decoration-none fs-4 rounded dropdown-toggle" id="dropdownUser2" data-bs-toggle="dropdown">
+						<i class="bi bi-person-square header-user-icon"></i>
+						</a>
+						<ul class="dropdown-menu text-small shadow">
+							%s
+						</ul>
+						%s
+				</div>
+			</div>
+		</header>
+	';
+	/**
+	 * @var string $htmlHeaderUserImage
+	 */
+	private string $htmlHeaderUserImage = '<img src="userImage" alt="mdo" width="40" height="40" class="rounded-circle">';
+	/**
+	 * @var string $htmlHeaderUserStart
+	 */
+	private string $htmlHeaderUserStart = '<i class="bi bi-person-square header-user-icon"></i>';
+	/**
+	 * @var string $htmlHeaderNavigation
+	 */
+	private string $htmlHeaderNavigation = '<ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownNavLink">%s</ul>';
+	/**
+	 * @var string $htmlHeaderNavLink
+	 */
+	private string $htmlHeaderNavLink = '<li><a class="dropdown-item" href="%s" title="%s">%s</a></li>';
+	/**
+	 * @var string $htmlHeaderNavLinkDivider
+	 */
+	private string $htmlHeaderNavLinkDivider = '<li><hr class="dropdown-divider"></li>';
+	/**
+	 * @var string $htmlHeaderNavUserLinks
+	 */
+	private string $htmlHeaderNavUserLink = '<li><a class="dropdown-item" href="%s" title="">%s</a></li>';
+	/**
+	 * @var string $htmlHeaderLinkHtml
+	 */
+	private string $htmlHeaderLinkHtml = '
+		<div class="card">
+			<img src="%s" class="card-img-top" alt="%s">
+			<div class="card-body">
+				<p class="card-text">%s</p>
+			</div>
+		</div>
+  	';
+	/**
+	 * @var string $htmlHeaderLinkHtmlExtra
+	 */
+	private string $htmlHeaderLinkHtmlExtra = '
+		<div class="card">
+			<img src="%s" class="card-img" alt="%s">
+			<div class="card-img-overlay">
+				%s
+			</div>
+		</div>
+	';
+	/**
+	 * @var string $htmlHeaderSearchBar
+	 */
+	private string $htmlHeaderSearchBar = '
+		<form class="w-100">
+			<input type="search" class="form-control" placeholder="Search..." aria-label="Search">
+		</form>
+	';
+	/**
+	 * @var string $htmlHeaderInterfaceText
+	 */
+	private string $htmlHeaderInterfaceText = '<h4 class="text-center mx-auto mt-2">%s</h4>';
+	/**
+     * href - adı standart uygulama header arka kısım birden fazla düğme tipi
      * 
-     * @var string $mlink 
+     * @var string $headerbutontipiiki 
      */
-    public string $mlink = '<li class="nav-item active"><a class="nav-link" title="%s" href="%s">%s</a></li>';
-    /**
-     * @var string $headerLinkMobil
-     */
-    public string $headerLinkMobil = '<li class="nav-item active"><a class="nav-link" title="%s" href="%s">%s</a></li>'; // '<a title="%s" href="%s">%s</a>';
-    
+    public string $htmlHeaderButton = '<a class="btn btn-sm btn-outline-dark" href="%s">%s</a>';
+	/**
+	 * @var string $appHeaderLogo
+	 */
+	private string $appHeaderLogo = ADDRESS . '/' . 'lokal-gorsel' . '/' . 'uygulama' . '/' . PREFIX;
 }
 ?>

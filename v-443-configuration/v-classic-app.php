@@ -6,18 +6,18 @@
  * Object oriented, strongly typed, up to date software in modular structure for 
  * creating web applications. Designed and documented for developers.
  * 
- * Release VTS.443.211 - Open Source Package - MPL 2.0 Licensed.
+ * Release VTS.443.222 - Open Source Package - MPL 2.0 Licensed.
  * 
  * https://onurgunescomtr@bitbucket.org/onurgunescomtr/verisanat-v.4.git
  * https://github.com/onurgunescomtr/verisanat
  * 
  * @package		Verisanat v.4.4.3 "Rembrandt"
- * @subpackage  VTS.443.211 [Tr]Verisanat Tam Sürüm - [En]Verisanat Full Version 
+ * @subpackage  VTS.443.222 [Tr]Verisanat Tam Sürüm - [En]Verisanat Full Version 
  * 
  * @author		Onur Güneş  https://www.facebook.com/onur.gunes.developer
  *                          https://www.twitter.com/onurgunescomtr
  *                          mailto:verisanat@outlook.com
- *                          https://www.verisanat.com/iletisim
+ *                          https://www.verisanat.com/contact
  * 
  * @copyright	Copyright (c) 2012 - 2021, Onur Güneş
  *              https://www.verisanat.com
@@ -77,10 +77,18 @@ class App{
      * @var array $infoAppConfig
      */
     private const infoAppConfig = [
-        'no_acdf' => 'Please login to your Verisanat account to obtain / modify your App Config File (ACF)',
-        'no_acdf_live' => 'This app is getting ready to rock! under maintenance, check back later.',
-        'read_error' => 'App Config File couldnt be read. Please verify that file is a valid json.',
-        'gm' => 'App known exit. Check logs for detailed information' . PHP_EOL
+        'EN' => [
+            'no_acdf' => 'Please login to your Verisanat account to obtain / modify your App Config File (ACF)',
+            'no_acdf_live' => 'This app is getting ready to rock! under maintenance, check back later.',
+            'read_error' => 'App Config File couldnt be read. Please verify that file is a valid json.',
+            'gm' => 'App known exit. Check logs for detailed information' . PHP_EOL
+        ],
+        'TR' => [
+            'no_acdf' => 'Lütfen Verisanat hesabınıza giriş yaparak Uygulama Ayarlar Dosyanızı (ACF) alınız / düzenleyiniz.',
+            'no_acdf_live' => 'Uygulama harikalar yaratmak için hazırlanıyor! Şuan bakım aşamasında, tekrar deneyin.',
+            'read_error' => 'Uygulama Ayarlar Dosyası (ACF) okunamadı. Lütfen geçerli bir json dosyası olduğunu doğrulayın.',
+            'gm' => 'Uygulama durduruldu. Detaylı bilgi için kayıt dosyanızı kontol edin.' . PHP_EOL
+        ]
     ];
     /**
      * @var array $applicationProperties
@@ -99,14 +107,16 @@ class App{
         'languageOption',
         'POSpaymentProcessor',
         'mailSenderName',
-        'compressedPages'
+        'compressedPages',
+		'useFullAppSearch',
+        'contactUri',
+        'aboutUri'
     ];
     /**
      * @var array $moduleProperties
      */
     private const moduleProperties = [
         'mainMenu',
-        'mobileMainMenu',
         'useModules',
         'modules',
         'mainPageModule',
@@ -238,9 +248,8 @@ class App{
     }
 
     /**
-     * prepares and loads the needed files depending on the application type
-     * 
-     * Uygulama tipine göre ihtiyaç duyulan dosyalari hazirlar
+     * [EN] Prepares and loads the needed files depending on the application type and launches
+     * [TR] Uygulama tipine göre ihtiyaç duyulan dosyalari hazirlar ve başlatır
      * 
      * @method loadApp() 
      * @return void
@@ -269,8 +278,6 @@ class App{
     /**
      * v.4.4.3 application specifications
      * 
-     * v.4.4.2 Genel uygulama ayarları
-     * 
      * @method getSpecs()
      * @param object $dos
      * @return void
@@ -287,16 +294,16 @@ class App{
 
                 }catch(\VTS\VerisanatAppException $e){
 
-                    \VTS\Scribe::appLog(self::infoAppConfig['read_error'] . $e->getMessage());
+                    \VTS\Scribe::appLog(self::infoAppConfig[LANG]['read_error'] . $e->getMessage());
 
-                    die(self::infoAppConfig['gm'] . self::infoAppConfig['read_error']);
+                    die(self::infoAppConfig[LANG]['gm'] . self::infoAppConfig[LANG]['read_error']);
                 }
 
                 self::setProperties($gA);
                 
             }else{
 
-                die(self::infoAppConfig['no_acdf']);
+                die(self::infoAppConfig[LANG]['no_acdf']);
             }
         }else{
             
@@ -306,15 +313,12 @@ class App{
                 
             }else{
 
-                die(self::infoAppConfig['no_acdf_live']);
+                die(self::infoAppConfig[LANG]['no_acdf_live']);
             }
         }
     }
 
     /**
-     * Genellikle yapı sınıflarının html öğelerinin barındığı trait leri yükler.
-     * v.4.4.2 - AP form öğelerini kaldırmam lazım 80001 08032021
-     * 
      * @method loadAppTraits()
      * @param object $dos
      * @return void
@@ -336,10 +340,6 @@ class App{
     }
 
     /**
-     * 443 Version control inheritance / i need to reconfigure this 90001 29042021
-     * 
-     * v.4.4.2 otomatik ve elle güncelleme kontrolu
-     * 
      * @method releaseSpecControl()
      * @param string $tekDosya
      * @return bool
@@ -378,10 +378,6 @@ class App{
     }
 
     /**
-     * Common application control
-     * 
-     * Genel yapı ve kontrol sınıflarım
-     * 
      * @method loadBaseApplication()
      * @param object $dos
      * @return void
@@ -397,7 +393,7 @@ class App{
     }
 
     /**
-     * Modül özelliklerini MODULISLEMLER sabitinde toplar. htaccess yaratır
+     * [TR] Modül özelliklerini MODULISLEMLER sabitinde toplar. htaccess yaratır
      * 
      * @method loadModuleConfig()
      * @param object $dos
@@ -438,11 +434,6 @@ class App{
     }
 
     /**
-     * Internal classes for internal applications / APIs
-     * 
-     * v.4.4.2 İç yapıya dahil sınıfları yükler
-     * Klasik sınıfları dahil etsem insanların işine yarar sanırım 80001 08032021
-     * 
      * @method loadInternalLibrary()
      * @param object $dos
      * @return void
@@ -461,11 +452,6 @@ class App{
     }
 
     /**
-     * 443 structure reliever and security enhancer micro loader
-     * can be used outside of scope, standalone with system-control.
-     * 
-     * v.4.4.2 yapısal yük hafifletici ve güvenlik arttırıcı mikro yükleyici
-     * 
      * @method microLoad()
      * @param string $cesit
      * @return void
@@ -474,7 +460,7 @@ class App{
     {
         foreach(self::microApps[$cesit]['interface'] as $t){
         
-            require_once BASE . '/' . RELEASE . '-application' . '/' . substr(RELEASE,0,1) . substr(RELEASE,3,1) . '-' . 'interfaces' . '/' . 'v-interface-' . $t . '.php';
+            require_once BASE . '/' . RELEASE . '-application' . '/' . 'interfaces' . '/' . 'v-interface-' . $t . '.php';
         }
 
         foreach(self::microApps[$cesit]['traits'] as $t){
@@ -489,9 +475,6 @@ class App{
     }
 
     /**
-     * Başlangıç ve dosya sürünlerini yazar
-     * global boşaltır
-     * 
      * @method versionBridge()
      * @param string $baslatdosya
      * @param string $version
@@ -509,32 +492,6 @@ class App{
         }
 
         ${VERISANATKURESELKONTROL} = null;
-    }
-
-    /**
-     * İlk kurulum yada güncelleme için gerekli özellikleri hazırlar.
-     * 
-     * @method sisOnYukle() 
-     * @return void
-     */
-    private static function sisOnYukle(): void
-    {
-        $dos = new \VTS\System\Dos;
-
-        $so = $dos->cd(RELEASE . '-configuration' . '/' . 'yapisal-kontrol')->dir('v-ozellik-*.php');
-
-        $sd = $dos->dir('v-sistem-*.php');
-
-        $dosyalar = array_merge($so,$sd);
-
-        unset($dos);
-
-        foreach($dosyalar as $k){
-
-            require_once $k;
-        }
-
-        // console -> opensource version
     }
 }
 ?>

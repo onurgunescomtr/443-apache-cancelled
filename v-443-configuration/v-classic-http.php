@@ -6,18 +6,18 @@
  * Object oriented, strongly typed, up to date software in modular structure for 
  * creating web applications. Designed and documented for developers.
  * 
- * Release VTS.443.211 - Open Source Package - MPL 2.0 Licensed.
+ * Release VTS.443.222 - Open Source Package - MPL 2.0 Licensed.
  * 
  * https://onurgunescomtr@bitbucket.org/onurgunescomtr/verisanat-v.4.git
  * https://github.com/onurgunescomtr/verisanat
  * 
  * @package		Verisanat v.4.4.3 "Rembrandt"
- * @subpackage  VTS.443.211 [Tr]Verisanat Tam Sürüm - [En]Verisanat Full Version 
+ * @subpackage  VTS.443.222 [Tr]Verisanat Tam Sürüm - [En]Verisanat Full Version 
  * 
  * @author		Onur Güneş  https://www.facebook.com/onur.gunes.developer
  *                          https://www.twitter.com/onurgunescomtr
  *                          mailto:verisanat@outlook.com
- *                          https://www.verisanat.com/iletisim
+ *                          https://www.verisanat.com/contact
  * 
  * @copyright	Copyright (c) 2012 - 2021 Onur Güneş
  *              https://www.verisanat.com
@@ -54,6 +54,38 @@ class Http{
         'gereksiz_tarayici' => '200.314.unnecessary runtime.',
         'izinsiz_bot' => '200.315.unauthorized bot - crawler - bs.',
         null => '200.316.charateristic access blocker.'
+    ];
+    /**
+     * @var array httpInfo
+     */
+    private const httpInfo = [
+        'htmlResponseBox' => '
+            <div class="sticky-top uyarilar text-center alert alert-success alert-dismissible fade show" role="alert">
+                <strong>%s : </strong> %s
+                <button type="button" class="close" data-dismiss="alert">
+                    <i class="bi bi-x-circle"></i></span>
+                </button>
+            </div>',
+        'htmlResponseBoxFail' => 
+            '<div class="sticky-top uyarilar text-center alert alert-danger alert-dismissible fade show" role="alert">
+                <strong>%s : </strong> %s
+                <button type="button" class="close" data-dismiss="alert">
+                    <i class="bi bi-x-circle"></i></span>
+                </button>
+            </div>'
+    ];
+    /**
+     * @var array htmlResponseLang
+     */
+    private const htmlResponseLang = [
+        'done' => [
+            'TR' => 'Tamamlandı',
+            'EN' => 'Completed'
+        ],
+        'fail' => [
+            'TR' => 'Başarısız',
+            'EN' => 'Failed'
+        ]
     ];
     /**
      * Classic user redirection with heads up
@@ -125,18 +157,11 @@ class Http{
         if (isset($_SESSION['guide_information'])){
 
             $text = match($_SESSION['warning_type']){
-                'warn' => '<div class="sticky-top uyarilar text-center alert alert-success alert-dismissible fade show" role="alert">
-                    <strong>Tamamlandı: </strong> '. $_SESSION['guide_information'] .'
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true"><i class="far fa-times-circle mobil-mt-1"></i></span>
-                    </button>
-                    </div></div>',
-                'error' => '<div class="sticky-top uyarilar text-center alert alert-warning alert-dismissible fade show" role="alert">
-                    <strong>Bazı problemler oluştu: </strong> '. $_SESSION['guide_information'] .'
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true"><i class="far fa-times-circle mobil-mt-1"></i></span>
-                    </button>
-                    </div></div>',
+
+                'warn' => sprintf(self::httpInfo['htmlResponseBox'],self::htmlResponseLang['done'][LANG],$_SESSION['guide_information']),
+
+                'error' => sprintf(self::httpInfo['htmlResponseBoxFail'],self::htmlResponseLang['fail'][LANG],$_SESSION['guide_information']),
+
                 null => null
             };
 
@@ -161,12 +186,12 @@ class Http{
     {
         if (preg_match('~[^\x20-\x7E]~',trim($deger)) > 0 || strpos($deger, "\0") !== false){
 
-            die(BASICWARN['get_kapat']);
+            die(BASICWARN['close_get']);
         }
 
         if (!isset($_GET[$deger])){
 
-            return $default ?? 'bosDeger';
+            return $default ?? 'emptyVarString';
         }else{
 
             return Audit::__type(Audit::fairHtml(strip_tags($_GET[$deger])),'string');
@@ -250,10 +275,7 @@ class Http{
     /**
 	 * Handle response.
 	 * 
-	 * I am trying to keep professional behavour and official RFCs by IETF but
-	 * i am gonna keep WTF. In the end noone but us devs will see it if happens.
-	 * 
-     * @method manageRedundantRequest()
+	 * @method manageRedundantRequest()
      * @param int $launchKey
      * @param string|null $so
      * @return void

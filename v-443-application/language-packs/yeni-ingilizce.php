@@ -42,6 +42,9 @@ $translate = array(
     'properties' => 'Properties'
 );
 $text_translate = array(
-    'tanim' => 'descriptions - paragraps'
+    'tanim' => 'descriptions - paragraphs'
 );
+$uri_translate = [
+    'hello' => 'hello-hello'
+];
 ?>

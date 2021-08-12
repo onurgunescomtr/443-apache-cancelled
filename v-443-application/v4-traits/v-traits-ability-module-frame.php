@@ -6,18 +6,18 @@
  * Object oriented, strongly typed, up to date software in modular structure for 
  * creating web applications. Designed and documented for developers.
  * 
- * Release VTS.443.211 - Open Source Package - MPL 2.0 Licensed.
+ * Release VTS.443.222 - Open Source Package - MPL 2.0 Licensed.
  * 
  * https://onurgunescomtr@bitbucket.org/onurgunescomtr/verisanat-v.4.git
  * https://github.com/onurgunescomtr/verisanat
  * 
  * @package		Verisanat v.4.4.3 "Rembrandt"
- * @subpackage  VTS.443.211 [Tr]Verisanat Tam Sürüm - [En]Verisanat Full Version 
+ * @subpackage  VTS.443.222 [Tr]Verisanat Tam Sürüm - [En]Verisanat Full Version 
  * 
  * @author		Onur Güneş  https://www.facebook.com/onur.gunes.developer
  *                          https://www.twitter.com/onurgunescomtr
  *                          verisanat@outlook.com
- *                          https://www.verisanat.com/iletisim
+ *                          https://www.verisanat.com/contact
  * 
  * @copyright	Copyright (c) 2012 - 2021 Onur Güneş
  *              https://www.verisanat.com
@@ -66,11 +66,11 @@ trait AbilityModuleFrame{
             $fiyat = $this->sn->fiyati;
         }
 
-        $durum = $this->sn->durumu === (string)1 ? 'in stock' : 'out of stock';
+        $this->sn->durumu === (string)1 ? $durum = 'in stock' : $durum = 'out of stock';
 
-        $ogeAdi = str_contains($this->sn->adi,',') ? str_replace(',',' - ',$this->sn->adi) : $this->sn->adi;
+        str_contains($this->sn->adi,',') ? $ogeAdi = str_replace(',',' - ',$this->sn->adi) : $ogeAdi = $this->sn->adi;
         
-        $ogeTanim = str_contains($this->sn->baslik,',') ? str_replace(',',' - ',$this->sn->baslik) : $this->sn->adi;
+        str_contains($this->sn->baslik,',') ? $ogeTanim = str_replace(',',' - ',$this->sn->baslik) : $ogeTanim = $this->sn->adi;
         
         return array(
             'no' => $this->sn->modelno,
@@ -80,14 +80,14 @@ trait AbilityModuleFrame{
             'stok' => $this->sn->toplamadet,
             'durumu' => 'new',
             'fiyati' => $fiyat,
-            'baglanti' => ADDRESS . '/' . MODULISLEMLER[$this->moduladi]['processInterface'] . '/' . $this->sn->{$this->uniqueIdentifierProperty},
-            'foto_baglanti' => ADDRESS . '/' . RELEASE . '-local-image' . '/' . 'm-' . $this->moduladi . '-foto' . '/' . $fotoDosyaAdi,
+            'baglanti' => ADDRESS . '/' . MODULISLEMLER[$this->moduleName]['processInterface'] . '/' . $this->sn->{$this->uniqueIdentifierProperty},
+            'foto_baglanti' => ADDRESS . '/' . 'lokal-gorsel' . '/' . 'm-' . $this->moduleName . '-foto' . '/' . $fotoDosyaAdi,
             'marka_adi' => App::getApp('applicationName')
         );
     }
 
     /**
-     * $headekleri dizisine dahil edilecek satırları alır
+     * $frameAdditions dizisine dahil edilecek satırları alır
      * 
      * @method headEkle()
      * @param $yeni yeni dosya adı, yada klasoru ile birlikte adı
@@ -112,7 +112,7 @@ trait AbilityModuleFrame{
                 $altklasor = true;
             }
             
-            $js = $altklasor ? $dos->cd('external-resources' . '/' . $yoldosya[0])->fileExists($yoldosya[1]) : $dos->cd('external-resources')->fileExists($yeni);
+            $altklasor ? $js = $dos->cd('external-resources' . '/' . $yoldosya[0])->fileExists($yoldosya[1]) : $js = $dos->cd('external-resources')->fileExists($yeni);
 
             if ($js || $css || $yenitipCss){
 
@@ -120,12 +120,12 @@ trait AbilityModuleFrame{
 
                     case 'js':
 
-                        $this->headekleri[] = sprintf($this->jsdosyasiDis,$yeni);
+                        $this->frameAdditions[] = sprintf($this->jsdosyasiDis,$yeni);
 
                     break;
                     case 'css':
 
-                        $this->headekleri[] = $yenitipCss ? sprintf($this->cssdosyasiIc,$yeni) : sprintf($this->cssdosyasi,$yeni);
+                        $yenitipCss ? $this->frameAdditions[] = sprintf($this->headCssFileInternal,$yeni) :$this->frameAdditions[] = sprintf($this->cssdosyasi,$yeni);
 
                     break;
 
@@ -146,9 +146,9 @@ trait AbilityModuleFrame{
     {
         $this->headekle = null;
 
-        if (isset($this->headekleri)){
+        if (isset($this->frameAdditions)){
 
-            foreach($this->headekleri as $t){
+            foreach($this->frameAdditions as $t){
 
                 $this->headekle .= $t;
             }
@@ -173,12 +173,13 @@ trait AbilityModuleFrame{
     }
 
     /**
-     * yeni
+     * @method useJavascriptUI()
+	 * @param string $JSname
+	 * @return void
      */
-    public function jsarayuzkullan(string $adi): void
+    public function useJavascriptUI(string $JSname): void
     {
-        $this->frame->jsarayuz($adi);
+        $this->frame->setFrameUserInterfaceName($JSname);
     }
 }
-
 ?>

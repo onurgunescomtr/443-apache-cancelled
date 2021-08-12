@@ -6,18 +6,18 @@
  * Object oriented, strongly typed, up to date software in modular structure for 
  * creating web applications. Designed and documented for developers.
  * 
- * Release VTS.443.211 - Open Source Package - MPL 2.0 Licensed.
+ * Release VTS.443.222 - Open Source Package - MPL 2.0 Licensed.
  * 
  * https://onurgunescomtr@bitbucket.org/onurgunescomtr/verisanat-v.4.git
  * https://github.com/onurgunescomtr/verisanat
  * 
  * @package		Verisanat v.4.4.3 "Rembrandt"
- * @subpackage  VTS.443.211 [Tr]Verisanat Tam Sürüm - [En]Verisanat Full Version 
+ * @subpackage  VTS.443.222 [Tr]Verisanat Tam Sürüm - [En]Verisanat Full Version 
  * 
  * @author		Onur Güneş  https://www.facebook.com/onur.gunes.developer
  *                          https://www.twitter.com/onurgunescomtr
  *                          mailto:verisanat@outlook.com
- *                          https://www.verisanat.com/iletisim
+ *                          https://www.verisanat.com/contact
  * 
  * @copyright	Copyright (c) 2012 - 2021 Onur Güneş
  *              https://www.verisanat.com
@@ -62,6 +62,10 @@ class Language{
      * @var string DILDOSYASIMETIN
      */
     private const DILDOSYASIMETIN = 'dilpaketi-metinler.json';
+	/**
+	 * @var string DILDOSYASIURI
+	 */
+	private const DILDOSYASIURI = 'dilpaketi-uri-list.json';
     /**
      * @var array $availableLanguages
      */
@@ -78,7 +82,7 @@ class Language{
     /**
      * @var array $baseLangControl
      */
-    private array $baseLangControl = ['bosDeger','turkce','ingilizce'];
+    private array $baseLangControl = ['emptyVarString','turkce','ingilizce'];
     /**
      * @var object $languagePackage
      */
@@ -87,6 +91,10 @@ class Language{
      * @var object $languagePackageText
      */
     public object $languagePackageText;
+	/**
+	 * @var object $languagePackageUri
+	 */
+	private object $languagePackageUri;
 
     public function __construct(string $langName)
     {
@@ -112,9 +120,13 @@ class Language{
 
         $kitaplikMetinler = array_merge_recursive($text_ceviri,$text_translate);
 
+		$kitaplikUriCeviri = array_merge_recursive($uri_ceviri,$uri_translate);
+
         $isNew ? $this->dos->f(self::DILDOSYASI)->write($kitaplik) : $this->dos->newFile(self::DILDOSYASI)->write($kitaplik);
 
         $isNew ? $this->dos->f(self::DILDOSYASIMETIN)->write($kitaplikMetinler) : $this->dos->newFile(self::DILDOSYASIMETIN)->write($kitaplikMetinler);
+
+		$isNew ? $this->dos->f(self::DILDOSYASIURI)->write($kitaplikUriCeviri) : $this->dos->newFile(self::DILDOSYASIURI)->write($kitaplikUriCeviri);
     }
 
     /**
@@ -130,7 +142,7 @@ class Language{
             $this->createLanguagePack();
         }
 
-        if ($this->dos->files([self::TURKCEKAYNAK,self::DILDOSYASI])->compareFiles('time','older')){
+        if ($this->dos->files([self::TURKCEKAYNAK,self::DILDOSYASI])->compareFiles('time','younger')){
 
             $this->createLanguagePack(true);
         }
@@ -138,6 +150,8 @@ class Language{
         $this->languagePackage = $this->dos->f(self::DILDOSYASI)->read('json')->getData();
 
         $this->languagePackageText = $this->dos->f(self::DILDOSYASIMETIN)->read('json')->getData();
+
+		$this->languagePackageUri = $this->dos->f(self::DILDOSYASIURI)->read('json')->getData();
 
         unset($this->dos);
     }
@@ -177,6 +191,15 @@ class Language{
     {
         return $this->languagePackageText;
     }
+
+	/**
+	 * @method getLangPackURI()
+	 * @return object $languagePackageUri
+	 */
+	public function getLangPackURI(): object
+	{
+		return $this->languagePackageUri;
+	}
 
     /**
      * @method setLang()

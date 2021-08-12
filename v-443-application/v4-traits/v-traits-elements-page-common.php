@@ -6,18 +6,18 @@
  * Object oriented, strongly typed, up to date software in modular structure for 
  * creating web applications. Designed and documented for developers.
  * 
- * Release VTS.443.211 - Open Source Package - MPL 2.0 Licensed.
+ * Release VTS.443.222 - Open Source Package - MPL 2.0 Licensed.
  * 
  * https://onurgunescomtr@bitbucket.org/onurgunescomtr/verisanat-v.4.git
  * https://github.com/onurgunescomtr/verisanat
  * 
  * @package		Verisanat v.4.4.3 "Rembrandt"
- * @subpackage  VTS.443.211 [Tr]Verisanat Tam Sürüm - [En]Verisanat Full Version 
+ * @subpackage  VTS.443.222 [Tr]Verisanat Tam Sürüm - [En]Verisanat Full Version 
  * 
  * @author		Onur Güneş  https://www.facebook.com/onur.gunes.developer
  *                          https://www.twitter.com/onurgunescomtr
  *                          verisanat@outlook.com
- *                          https://www.verisanat.com/iletisim
+ *                          https://www.verisanat.com/contact
  * 
  * @copyright	Copyright (c) 2012 - 2021 Onur Güneş
  *              https://www.verisanat.com
@@ -36,11 +36,11 @@
 
 namespace VTS;
 
-Version\VersionCheck::dkontrol(__FILE__,'4.4.2');
+Version\VersionCheck::dkontrol(__FILE__,'4.4.3');
 
 trait CommonPageElements{
 
-    private string $theNonString = '<div class="d-none">%s is not available right now.</div>';
+	private string $theNonString = '<div class="d-none">%s is not available right now.</div>';
     /**
      * @var string $facebookLogin
      */
@@ -96,22 +96,22 @@ trait CommonPageElements{
                 <div class="col-md-6 text-center mx-auto">
                     <div class="col-auto">
                         %s
-                        <form id="iletisimsayfasi" class="mx-auto mb-4 text-center" action="'. ADDRESS .'/iletisim" method="post" enctype="multipart/form-data">
+                        <form id="iletisimsayfasi" class="mx-auto mb-4 text-center" action="'. ADDRESS .'/' . '%s' . '" method="post" enctype="multipart/form-data">
                             <h5 class="mb-4 text-warning"> %s </h5>
                             <div class="form-group text-center">
-                                <label class="font-italic"> %s </label>
+                                <label class="fst-italic"> %s </label>
                                 <input type="text" class="form-control" placeholder="" name="as" autocomplete="on" autofocus required>
                             </div>
                             <div class="form-group text-center">
-                                <label class="font-italic"> %s </label>
+                                <label class="fst-italic"> %s </label>
                                 <input type="text" class="form-control" placeholder="" name="email" autocomplete="off" required>
                             </div>
                             <div class="form-group text-center">
-                                <label class="font-italic"> %s </label>
+                                <label class="fst-italic"> %s </label>
                                 <input type="text" class="form-control" placeholder="" name="telefon" autocomplete="off" required>
                             </div>
                             <div class="form-group text-center">
-                                <label class="font-italic"> %s </label>
+                                <label class="fst-italic"> %s </label>
                                 <textarea type="text" class="form-control" placeholder="" name="ileti" autocomplete="off" required></textarea>
                             </div>
                             <input type="hidden" class="hidden" name="giris-istegi" value="%s">
@@ -122,10 +122,9 @@ trait CommonPageElements{
                             <button type="submit" class="btn btn-sm btn-outline-dark"> %s </button>
                             %s
                             <div class="form-group mt-2">
-                                <p class="" id="sartlar-gizlilik">Kullanıcı girişi yaparak
-                                    <a class="text-info font-italic" href="'. ADDRESS . '/' . RELEASE . '-publications' . '/' . 'kullanim-ve-sozlesmeler/kullanim-sartlari.html">Kullanım Şartları</a> ve <br>
-                                    <a class="text-info font-italic" href="'. ADDRESS . '/' . RELEASE . '-publications' . '/' . 'kullanim-ve-sozlesmeler/gizlilik-politikasi.html">Gizlilik Politikası</a> &apos;nı kabul etmiş sayılırsınız.
-                                </p>
+                                <p class=""> %s
+                                <a class="text-primary fst-italic" href="'. ADDRESS . '/' . 'publications' . '/' . '%s' . '">%s</a> &#8212;
+                                <a class="text-primary fst-italic" href="'. ADDRESS . '/' . 'publications' . '/' . '%s' . '">%s</a>
                             </div>
                     </div>
                     </form>
@@ -134,109 +133,137 @@ trait CommonPageElements{
             </div>
         </div>
     ';
+	/**
+	 * @var string $classicRegisterElement
+	 */
+	public string $classicRegisterElement = '
+		<div class="container text-center my-auto">
+			<div class="col-auto modal-dialog-centered">
+				<form id="kayitsayfasi" class="mx-auto mb-4 text-center" action="%s" method="post" enctype="multipart/form-data">
+				<h5 class="mb-4">%s %s</h5>
+				<div class="form-group text-center">
+					<label class="fst-italic m-3">%s</label>
+					<input type="name" class="form-control" placeholder="%s" name="i" autocomplete="on" autofocus required pattern="^[a-z0-9]\d{3,0}$">
+				</div>
+				%s
+				<div class="form-group">
+					<label class="fst-italic m-3">%s</label>
+					<input type="password" class="form-control" name="s" placeholder="%s" required pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="%s" autocomplete="current-password">
+					<input type="password" class="form-control mt-2" name="stekrar" placeholder="%s" required autocomplete="current-password">
+					<p class="form-text text-muted pass-info">%s</p>
+				</div>
+				<input type="hidden" class="hidden" name="giris-istegi" value="%s">
+				<div class="form-group mt-4">
+					<input type="hidden" id="g-recaptcha-response" name="g-recaptcha-response">
+					<input type="hidden" name="action" value="kayitsayfasi">
+					<input type="hidden" name="yenikayit" value="tam-kullanici-kaydi">
+				</div>
+				<a href="'. ADDRESS . '/' . LOGINURI . '" class="btn btn-sm btn-outline-dark">%s</a>
+				<button type="submit" class="btn btn-sm btn-outline-primary">%s</button>
+				<div class="form-group mt-2">
+					<p class=""> %s
+					<a class="text-primary fst-italic" href="'. ADDRESS . '/' . 'publications' . '/' . '%s' . '">%s</a> &#8212;
+					<a class="text-primary fst-italic" href="'. ADDRESS . '/' . 'publications' . '/' . '%s' . '">%s</a>
+					</p>
+				</div>
+				%s
+				</form>
+			</div>
+		</div>
+	';
+	/**
+	 * @var string $formEmailElement
+	 */
+	public string $formEmailElement = '
+		<div class="form-group text-center">
+			<label class="fst-italic m-3">%s</label>
+			<input type="email" class="form-control" placeholder="%s" name="postaadresi" autocomplete="on" required pattern="%s" title="Lütfen geçerli bir email adresi giriniz.">
+		</div>
+	';
+	/**
+	 * @var string $formEmailPattern
+	 */
+	public string $formEmailPattern = '[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$';
+	/**
+	 * @var string $classicLoginElement
+	 */
+	public string $classicLoginElement = '
+		<div class="container text-center vh-100">
+			<div class="col-auto modal-dialog-centered">
+				<form id="loginsayfasi" class="mx-auto mb-4 text-center" action="%s" method="post" enctype="multipart/form-data">
+					
+					<div class="form-group text-center">
+						<label class="fst-italic">%s</label>
+						<input type="email" class="form-control" placeholder="e-posta" name="postaadresi" autocomplete="on" autofocus required>
+					</div>
+					<div class="form-group">
+						<label class="fst-italic">%s</label>
+						<input type="password" class="form-control" name="s" autocomplete="on" placeholder="%s" required>
+						<small class="form-text text-muted">%s</small>
+					</div>
+					<input type="hidden" class="hidden" name="giris-istegi" value="%s">
+					<div class="form-group mt-4">
+						<input type="hidden" id="g-recaptcha-response" name="g-recaptcha-response">
+						<input type="hidden" name="action" value="loginsayfasi">
+					</div>
+					<a href="'. ADDRESS .'/account-operations/sifremi-yenile" class="btn btn-sm btn-outline-dark">%s</a>
+					<a href="'. ADDRESS .'/' . LOGINURI . '/' . '%s" class="btn btn-sm btn-outline-dark">%s</a>
+					<button type="submit" class="btn btn-sm btn-outline-primary">%s</button>
+					<div class="form-group mt-4">
+			%s
+					</div>
+					<div class="form-group mt-2">
+						<p class=""> %s
+						<a class="text-primary fst-italic" href="'. ADDRESS . '/' . 'publications' . '/' . '%s' . '">%s</a> &#8212;
+						<a class="text-primary fst-italic" href="'. ADDRESS . '/' . 'publications' . '/' . '%s' . '">%s</a>
+						</p>
+					</div>
+			%s
+				</form>
+			</div>
+		</div>
+	';
     /**
      * container arayuz-sabit
      * 
-     * @var string $temelkapsayici
+     * @var string $htmlBasicContainer
      */
-    public $temelkapsayici = '<div class="container arayuz-sabit"><div class="row arayuz-sabit mb-2">%s</div></div>';
-    /**
-     * @var string $kartlartamam
-     */
-    public $kartlartamam = '<div class="card-columns col-md-9 p-sol-yok p-sag-duzenle">%s</div>';
+    public $htmlBasicContainer = '<div class="container"><div class="row mb-2">%s</div></div>';
     /**
      * link, fotograf, başlık, özet yazı
      * 
-    * @var string $kartlar
+    * @var string $htmlCardItem
     */
-    public $kartlar = '<a href="%s">
-        <div class="card shadow border-secondary">
-            <img src="%s" class="card-img-top">
-            <div class="card-body">
-                <h5 class="card-title">%s</h5>
-                <strong class="d-inline-block mb-2 text-primary">%s</strong>
-                <p class="card-text">%s</p>
-            </div>
-        </div>
-        </a>';
+    public $htmlCardItem = '
+		<a href="%s">
+			<div class="card shadow border-secondary">
+				<img src="%s" class="card-img-top">
+				<div class="card-body">
+					<h5 class="card-title">%s</h5>
+					<strong class="d-inline-block mb-2 text-primary">%s</strong>
+					<p class="card-text">%s</p>
+				</div>
+			</div>
+		</a>
+	';
     /**
      * fotograf, başlık
      * 
-    * @var string $catCard  
+    * @var string $htmlCategoryCardItem  
     */
-    public $catCard = '<div class="card text-white">
-    <img src="%s" class="card-img">
-    <div class="card-img-overlay d-flex">
-      <p class="card-title text-center align-self-center mx-auto my-auto golgever">%s</p>
-    </div>
-    </div>';
+    public $htmlCategoryCardItem = '
+		<div class="card text-white">
+			<img src="%s" class="card-img">
+			<div class="card-img-overlay d-flex">
+				<p class="card-title text-center align-self-center mx-auto my-auto golgever">%s</p>
+			</div>
+		</div>
+	';
     /**
-     * modal id - h5 modal başlığı - div modal içeriği - href link  - buton adı
-     * 
-     * @var string $modallinkli  
+     * @var string $htmlFooterVerisanat
      */
-    public $modallinkli = '<div class="modal fade" id="%s" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">%s</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Kapat"><span aria-hidden="true">&times;</span></button>
-        </div>
-        <div class="modal-body">
-        %s
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Kapat</button>
-          <a href="%s" class="btn btn-sm btn-warning">%s</a>
-        </div>
-      </div>
-    </div>
-    </div>';
-    /**
-     * modal id (verisanat-modal-X) - h5 modal başlığı - div modal içeriği
-     * 
-     * @var string $modallinksiz 
-     */
-    public $modallinksiz = '<div class="modal fade" id="%s" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">%s</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Kapat"><span aria-hidden="true">&times;</span></button>
-        </div>
-        <div class="modal-body">
-        %s
-        </div>
-        <div class="modal-footer"></div>
-      </div>
-    </div>
-    </div>';
-    /**
-     * modal data-target  -  buton adı
-     * 
-     * @var string $modalbuton  
-     */
-    public $modalbuton = '<button type="button" class="btn btn-sm btn-danger" data-toggle="modal" data-target="#%s">%s</button>';
-    /**
-     * standart uygulama mt-4 div'li img-fluid rounded fotograf kapsayıcısı, img adresi.
-     * 
-     * @var string $tekfotograflink
-     */
-    public $tekfotograflink = '<div class="mt-4"><img src="%s" class="img-fluid rounded"></div>';
-    /**
-     * standart uygulama yan list menu linkleri, href - adı.
-     * 
-     * @var string $yanbarlink
-     */
-    public $yanbarlink = '<a href="%s" class="list-group-item list-group-item-action list-group-item-dark bg-verisanat-kapali">%s</a>';
-    
-    /**
-     * standart uygulama footer
-     * 
-     * @var string $genelfooter
-     */
-    public $genelfooter = '
-        <footer class="footer mt-auto p-sm-1 arka-plan-bilgi %s">
+    public string $htmlFooterVerisanat = '
+        <footer class="footer mt-auto p-sm-1">
             <div class="container">
                 <div class="row m-2">
                     <div class="col-md-12 px-0 text-center">
@@ -247,82 +274,18 @@ trait CommonPageElements{
             </div>
         </footer>
     ';
+	/**
+	 * @var string $documentEndHtml
+	 */
+	public string $documentEndHtml = '</body></html>';
     /**
-     * sayfa içinde başlık yapısı
-     * 
-     * @var string $normalsayfabasligi 
+     * @var string $htmlPageCardBlock
      */
-    public $normalsayfabasligi = '
-        <div class="col-md-12 p-sol-yok d-none d-md-block d-lg-block">
-            <h5>
-                <span class="bg-verisanat-acik rounded p-1 mx-auto">%s</span>
-            </h5>
-        </div>
-    ';
-    /**
-     * mobilde header mobil menüye kaydıkça sabitlenen ana sayfadan başlıklar
-     * 
-     * @var string $mobilyapiskanbaslik
-     */
-    public $mobilyapiskanbaslik = '
-        <div class="d-md-none d-lg-none d-sm-block mt-1 bg-verisanat-acik sticky-top mobil-ortala rounded-lg mobil-yapiskan-baslik">
-            <h5 class="mt-1 text-center">%s</h5>
-        </div>
-    ';
-    /**
-     * yanbar ile kullanılabilecek ekran ogesi, col-9
-     * 
-     * @var string $biroge
-     * @param string %s öğe adı (başlık)
-     * @param string %s fotoğraf (dosya adı)
-     * @param string %s öğe içeriği (yazı)
-     * @param string %s sayfa eki - yorumlar - facebook eklentisi vb.
-     */
-    public $biroge = '
-        <div class="col-md-9 d-flex p-sol-yok p-sag-duzenle kucuk-ekran-yasla mt-2">
-            <h3 class="mb-4 mx-auto mobil-yazi">%s</h3>
-            <img class="img-fluid align-self-center mx-auto mb-2" src="%s">
-            <div class="text-justify secimyok mobil-yazi yazi">%s</div>
-            %s
-        </div>
-    ';
-    /**
-     * tam ekran ogesi, col-12
-     * 
-     * @var string $birogetam
-     * @param string %s öğe adı (başlık)
-     * @param string %s fotoğraf (dosya adı)
-     * @param string %s öğe içeriği (yazı)
-     * @param string %s sayfa eki - yorumlar - facebook eklentisi vb.
-     */
-    public $birogetam = '
-        <div class="col-md-12 d-flex p-sol-yok p-sag-duzenle kucuk-ekran-yasla mt-2">
-            <h3 class="mb-4 mx-auto mobil-yazi">%s</h3>
-            <img class="img-fluid align-self-center mx-auto mb-2" src="%s">
-            <div class="text-justify secimyok mobil-yazi yazi">%s</div>
-            %s
-        </div>
-    ';
-    /**
-     * @var string $yanmenukapsayici
-     */
-    public $yanmenukapsayici = '<div class="text-center sticky-top menu-acaip rounded d-none d-lg-block p-sag-yok p-sol-yok">%s</div>';
-    /**
-     * @var string $anasayfablogu
-     */
-    public $anasayfablogu = '<div class="col-md-9 d-flex order-1 p-sol-yok p-sag-yok kucuk-ekran-yasla">%s</div>';
-    /**
-     * @var string $anasayfabloguiki
-     */
-    public $anasayfabloguiki = '<div class="col-md-9 d-flex order-5 p-sol-yok p-sag-yok kucuk-ekran-yasla">%s</div>';
-    /**
-     * @var string $anasayfakartblogu
-     */
-    public $anasayfakartblogu = '<div class="card-columns order-6 col-md-9 p-sol-yok p-sag-duzenle">%s</div>';
-    /**
-     * @var string $anasayfakartblogu
-     */
-    public $sayfaKartBlogu = '<div class="card-columns col-md-12 p-sag-yok p-sol-yok">%s</div>';
+    public string $htmlPageCardBlock = '<div class="card-columns col-md-12 p-sag-yok p-sol-yok">%s</div>';
+	/**
+	 * @var string $htmlPageSalutation
+	 */
+	public string $htmlPageSalutation = '<h4 class="mt-2 text-center font-weight-bold">%s</h4><p class="text-center mt-3">%s</p>';
     /**
      * @var string $gettingReady
      */

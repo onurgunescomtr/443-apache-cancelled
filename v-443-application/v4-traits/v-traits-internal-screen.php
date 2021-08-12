@@ -6,18 +6,18 @@
  * Object oriented, strongly typed, up to date software in modular structure for 
  * creating web applications. Designed and documented for developers.
  * 
- * Release VTS.443.211 - Open Source Package - MPL 2.0 Licensed.
+ * Release VTS.443.222 - Open Source Package - MPL 2.0 Licensed.
  * 
  * https://onurgunescomtr@bitbucket.org/onurgunescomtr/verisanat-v.4.git
  * https://github.com/onurgunescomtr/verisanat
  * 
  * @package		Verisanat v.4.4.3 "Rembrandt"
- * @subpackage  VTS.443.211 [Tr]Verisanat Tam Sürüm - [En]Verisanat Full Version 
+ * @subpackage  VTS.443.222 [Tr]Verisanat Tam Sürüm - [En]Verisanat Full Version 
  * 
  * @author		Onur Güneş  https://www.facebook.com/onur.gunes.developer
  *                          https://www.twitter.com/onurgunescomtr
  *                          verisanat@outlook.com
- *                          https://www.verisanat.com/iletisim
+ *                          https://www.verisanat.com/contact
  * 
  * @copyright	Copyright (c) 2012 - 2021 Onur Güneş
  *              https://www.verisanat.com
@@ -63,7 +63,16 @@ trait Screen{
      */
     public function startHtmlPage(): string
     {
-        return $this->frame->getHtmlHead() . $this->vui->startHtmlBody() . $this->frame->getHtmlAppMenu();
+        return $this->frame->getHtmlHead() . $this->vui->startHtmlBody('verisanat-html-doc','433') . $this->frame->getHtmlAppMenu();
+    }
+
+    /**
+     * @method endHtmlPage()
+     * @return string $ak
+     */
+    public function endHtmlPage(): string
+    {
+        return sprintf($this->vui->htmlFooterVerisanat,App::getApp('applicationName'),date('Y'),'Sunucu yükü: ' . Audit::getLoad()) . $this->vui->documentEndHtml;
     }
 }
 ?>

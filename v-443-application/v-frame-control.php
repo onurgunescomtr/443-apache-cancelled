@@ -6,18 +6,18 @@
  * Object oriented, strongly typed, up to date software in modular structure for 
  * creating web applications. Designed and documented for developers.
  * 
- * Release VTS.443.211 - Open Source Package - MPL 2.0 Licensed.
+ * Release VTS.443.222 - Open Source Package - MPL 2.0 Licensed.
  * 
  * https://onurgunescomtr@bitbucket.org/onurgunescomtr/verisanat-v.4.git
  * https://github.com/onurgunescomtr/verisanat
  * 
  * @package		Verisanat v.4.4.3 "Rembrandt"
- * @subpackage  VTS.443.211 [Tr]Verisanat Tam Sürüm - [En]Verisanat Full Version 
+ * @subpackage  VTS.443.222 [Tr]Verisanat Tam Sürüm - [En]Verisanat Full Version 
  * 
  * @author		Onur Güneş  https://www.facebook.com/onur.gunes.developer
  *                          https://www.twitter.com/onurgunescomtr
  *                          mailto:verisanat@outlook.com
- *                          https://www.verisanat.com/iletisim
+ *                          https://www.verisanat.com/contact
  * 
  * @copyright	Copyright (c) 2012 - 2021 Onur Güneş
  *              https://www.verisanat.com
@@ -83,10 +83,10 @@ class Frame{
      */
     public const infoFrame = [
         'TR' => [
-            'moduleFrame_double' => 'Birden fazla çerçeve kullanıldığı zaman Ana Modül Kullan özelliği false olmalıdır.'
+            'modulcer_ikiz' => 'Birden fazla çerçeve kullanıldığı zaman Ana Modül Kullan özelliği false olmalıdır.'
         ],
         'EN' => [
-            'moduleFrame_double' => 'When more than one Frames are in use, useMasterModule option needs to be set to false.'
+            'modulcer_ikiz' => 'When more than one Frames are in use, useMasterModule option needs to be set to false.'
         ]
     ];
     /**
@@ -99,6 +99,10 @@ class Frame{
      * @var object $loadedLanguagePackText
      */
     public object $loadedLanguagePackText;
+	/**
+	 * @var object $loadedLanguagePackURI
+	 */
+	private object $loadedLanguagePackURI;
     /**
      * the Language number selected in app
      * 
@@ -120,23 +124,17 @@ class Frame{
      */
     public string|null $htmlHeaderMobile;
     /**
-     * standart uygulama mobil header linkleri
-     * 
-     * @var string|null $htmlHeaderLinksMobile 
-     */
-    public string|null $htmlHeaderLinksMobile = null;
-    /**
      * Such as login - change lang etc.
      * 
      * standart uygulama header düğmeleri, header arka kısımda yer alır
      * 
-     * @var string $htmlHeaderAppButtons 
+     * @var string $htmlMenuUserLinks 
      */
-    public string|null $htmlHeaderAppButtons;
+    public string|null $htmlMenuUserLinks;
     /**
-     * The unique string id of an object, a data unit currently supported by Frame
+     * [EN] The unique string id of an object, a data unit currently supported by Frame
      * 
-     * herhangi bir öğe nin, yazının, ürünün, materyalin, dosyanin eşsiz adı
+     * [TR] Herhangi bir öğe nin, yazının, ürünün, materyalin, dosyanin eşsiz adı
      * 
      * @var string $currentUniqueObjectID 
      */
@@ -166,41 +164,45 @@ class Frame{
      */
     protected string $activeModule;
     /**
-     * head title ı ifade eder
-     * 
      * @var string $headTitle 
      */
     private $headTitle;
     /**
-     * head description ı ifade eder
-     * 
      * @var string $headDescription 
      */
     private $headDescription;
     /**
-     * head keyword u ifade eder
-     * 
      * @var string $headKeywords 
      */
     private $headKeywords;
     /**
-     * title a SEO eklentisi
-     * 
      * @var string $webTitleAddition 
      */
     private $webTitleAddition;
     /**
-     * description a SEO eklentisi
-     * 
      * @var string $webDescriptionAddition 
      */
     private $webDescriptionAddition;
     /**
-     *  keyword a SEO eklentisi
-     * 
      * @var string $webKeywordAddition
      */
     private $webKeywordAddition;
+	/**
+	 * @var string $htmlAppMenuLinks
+	 */
+	private string|null $htmlAppMenuLinks = null;
+    /**
+     * @var array $appModules
+     */
+    private array $appModules;
+    /**
+     * @var string|null $process
+     */
+    private string|null $process;
+    /**
+     * @var string|null $subProcess
+     */
+    private string|null $subProcess;
 
     /**
      * değiştirilecek değişken adı - yeni içerik, sprintf için %s içeren string yada array
@@ -257,6 +259,19 @@ class Frame{
         return $this->loadedLanguagePackText->$kelime[$this->langNumber] ?? null;
     }
 
+	/**
+	 * Translates the URI part to app language state
+	 * 
+	 * @since 443.2 New Feature
+	 * @method translateUri()
+	 * @param string $word
+	 * @return string $uriPart
+	 */
+	public function translateUri(string $word): string|null
+	{
+		return $this->loadedLanguagePackURI->$word[$this->langNumber] ?? null;
+	}
+
     public function __construct($gx = null)
     {
         $this->appStaticMenu = App::getApp('staticMenu');
@@ -272,6 +287,8 @@ class Frame{
         $this->loadedLanguagePack = $this->dil->getLangPack();
 
         $this->loadedLanguagePackText = $this->dil->getLangPackText();
+
+		$this->loadedLanguagePackURI = $this->dil->getLangPackURI();
     }
 
     /**
@@ -432,9 +449,9 @@ class Frame{
 
         $this->head .= $this->headiki;
 
-        $this->headDortEkle();
+        $this->applyHeadDataSupport();
 
-        $this->headucekle();
+        $this->applyHeadVisualElements();
 
         $this->head .= $this->htmlheadek;
 
@@ -448,9 +465,9 @@ class Frame{
      * @param string $adi
      * @return void
      */
-    public function jsarayuz(string $adi = null): void
+    public function setFrameUserInterfaceName(string $adi = null): void
     {
-        $this->arayuzadi = $adi;
+        $this->userInterfaceName = $adi;
     }
 
     /**
@@ -460,11 +477,11 @@ class Frame{
      * @param string $adi
      * @return void
      */
-    private function headucekle(): void
+    private function applyHeadVisualElements(): void
     {
-        if (App::getApp('javaScriptUI') && isset($this->arayuzadi)){
+        if (App::getApp('javaScriptUI') && isset($this->userInterfaceName)){
 
-            switch($this->arayuzadi):
+            switch($this->userInterfaceName):
 
                 case 'vue':
 
@@ -479,37 +496,37 @@ class Frame{
 
                     unset($dos);
 
-                    $this->head .= $this->headuc . $this->vuejshead;
+                    $this->head .= $this->headCssJS . $this->vuejshead;
 
                 break;
 
                 case 'react':
 
-                    $this->head .= $this->headuc . $this->reactjshead;
+                    $this->head .= $this->headCssJS . $this->reactjshead;
 
                 break;
 
                 default:
 
-                    $this->head .= $this->headuc;
+                    $this->head .= $this->headCssJS;
 
                 break;
 
             endswitch;
         }else{
 
-            $this->head .= $this->headuc;
+            $this->head .= $this->headCssJS;
         }
     }
 
     /**
-     * v.4.4.2 Karınca v.1
-     * head te yer alacak mikro veri yi head e ekler
+     * [EN] If applicable adds the micro data support to HTML head tag
+	 * [TR] HEAD için meta data verisi varsa işler.
      * 
-     * @method headDortEkle()
+     * @method applyHeadDataSupport()
      * @return void
      */
-    private function headDortEkle(): void
+    private function applyHeadDataSupport(): void
     {
         if (isset($this->microDataSupport) && isset($this->microDataSupport['no'])){
 
@@ -520,9 +537,8 @@ class Frame{
     }
 
     /**
-     * add strings directly to HTML HEAD
-     * 
-     * uygulama head ine eklenecek satirlar string
+     * [EN] Add strings directly to HTML HEAD
+     * [TR] Uygulama head ine eklenecek satirlar string
      * 
      * @method addHtmlHead()
      * @return void
@@ -533,8 +549,6 @@ class Frame{
     }
 
     /**
-     * uygulama html head i dondurur
-     * 
      * @method getHtmlHead()
      * @return string $head
      */
@@ -548,187 +562,223 @@ class Frame{
     }
 
     /**
-     * @method yanmenu() standart yan menu yazar ve dondurur. array linkler, sticky-top ve inceliste opsiyonel
-     * @param array $linkler yanmenude bulunacak linkler - href / adi
-     * @param string $o yanmenü nün sayfa sırası html class olarak - order-2, order-3 vb.
-     * @param string $s yanmenü varsayılan üst öğeye yapışkandır sticky-top
-     * @param string $i yanmenü öğelerinin yani link butonlarının kalınlığı - inceliste varsayılan
-     * @return string $yanmenubir
-     */
-    public function yanmenu(array $linkler = null,string $o = 'order-2',string $s = 'sticky-top',string $i = 'inceliste'): string
-    {
-        $l = null;
-
-        if (isset($linkler)){
-
-            foreach($linkler as $tek){
-
-                $l .= sprintf($this->yanmenulink,$tek['href'],$tek['adi']);
-            }
-        }
-
-        $ust = sprintf($this->yanmenuust,$o,$s,$i);
-        
-        $this->yanmenubir = $ust . $l . $this->yanmenualt;
-        
-        $this->yanmenukullan = true;
-        
-        return $this->yanmenubir;
-    }
-
-    /**
-     * bir title - bir link - bir link adı array i yaratır
-     * 
-     * @method menulinkolustur() 
-     * @param string $t başlık
+     * @method createMenuLink() 
+     * @param string $t title
      * @param string $i href
-     * @param string $a adı
-     * @return array $bu
+	 * @param string $lt Translate string
+     * @param string $li Link Image <img>
+	 * @param string $d Default Text - <a>TEXT</a>
+	 * @param string $lh Link HTML string <h> <p> <div> <a>
+     * @return array
      */
-    private function menulinkolustur(string $t,string $i,string $a): array
+    private function createMenuLink(string $t,string $i,string $lt,string $li,string $d,string $lh): array
     {
         return [
             'title' => $t,
             'href' => $i,
-            'adi' => $a,
-            'dyazi' => null,
-            'bilgi' => null
+            'langText' => $lt,
+			'linkImage' => $li,
+            'defaultText' => $d,
+			'linkHtml' => $lh
         ];
     }
 
-    public function menulink(): void
+	/**
+	 * @method createMenuLinks()
+	 * @return string
+	 */
+    public function createMenuLinks(): string
     {
         $this->appStaticMenu ? $menuHolder = App::getModule('mainMenu') : $menuHolder = $this->modulmenu;
 
         $this->mcKontrol ? $menuHolder = $this->mcerceve->menuVer() : $menuHolder = App::getModule('mainMenu');
 
-        $this->headerorta[1] = null;
+		$this->htmlAppMenuLinks = sprintf($this->htmlHeaderNavLink,
+	
+			ADDRESS,
+
+			App::getApp('applicationName'),
+
+			$this->translate('home')
+		);
 
         if (count($menuHolder) > 0){
 
             foreach($menuHolder as $l){
 
-                if (App::getApp('languageOption')){
+                $linkName = App::getApp('languageOption') ? $this->translate($l['langText']) : $l['defaultText'];
 
-                    $this->headerorta[1] .= sprintf($this->headerlink,$l['title'],ADDRESS . '/' . $l['href'],$this->translate($l['dyazi']),$l['bilgi']);
-                }else{
+				switch(true):
 
-                    $this->headerorta[1] .= sprintf($this->headerlink,$l['title'],ADDRESS . '/' . $l['href'],$l['yazi'],$l['bilgi']);
-                }
-            }
+					case isset($l['linkImage']) && isset($l['linkHtml']):
+						
+						$this->htmlAppMenuLinks .= sprintf($this->htmlHeaderNavLink,
+						
+							ADDRESS . '/' . $l['href'],
 
-            $this->headerorta[1] .= $this->languageButton;
+							$l['title'],
 
-            ksort($this->headerorta);
+							sprintf($this->htmlHeaderLinkHtmlExtra,
+							
+								$l['linkImage'],
+
+								$l['defaultText'],
+
+								$l['linkHtml']
+							)
+
+						);
+						
+					break;
+
+					case isset($l['linkImage']) && is_null($l['linkHtml']):
+
+						$this->htmlAppMenuLinks .= sprintf($this->htmlHeaderNavLink,
+					
+							ADDRESS . '/' . $l['href'],
+
+							$l['title'],
+
+							sprintf($this->htmlHeaderLinkHtml,
+							
+								$l['linkImage'],
+
+								$l['defaultText'],
+
+								$linkName
+							)
+						);
+
+					break;
+
+					default:
+
+						$this->htmlAppMenuLinks .= sprintf($this->htmlHeaderNavLink,
+					
+							ADDRESS . '/' . $l['href'],
+
+							$l['title'],
+
+							$linkName
+						);
+
+					break;
+
+				endswitch;
+			}
         }
 
-        $this->headeron[1] = sprintf($this->headerlogo,ADDRESS,ADDRESS . '/' . RELEASE . '-local-image' . '/' . 'uygulama' . '/' . PREFIX);
+        $this->htmlAppMenuLinks .= sprintf($this->htmlHeaderNavLink,
+        
+            ADDRESS . '/' . App::getApp('contactUri'),
 
-        ksort($this->headeron);
+            $this->translate('app_contact_title'),
+
+            $this->translate('app_contact_name')
+    
+        );
+
+        $this->htmlAppMenuLinks .= sprintf($this->htmlHeaderNavLink,
+        
+            ADDRESS . '/' . App::getApp('aboutUri'),
+
+            $this->translate('app_about_title'),
+
+            $this->translate('app_about_name')
+
+        );
+
+		return $this->htmlAppMenuLinks;
     }
 
     /**
-     * sabit menü kullanımdaysa mobilde görünecek linkleri oluşturur.
-     * 
-     * @method mobillink() 
-     * @return void
+     * @method getHtmlAppMenu()
+     * @return string $htmlHeaderMenu
      */
-    public function mobillink(): void
+    public function getHtmlAppMenu(): string
     {
-        if ($this->appStaticMenu){
+        $this->createHtmlMenu();
 
-            foreach(App::getModule('mobileMainMenu') as $l){
-
-                $this->htmlHeaderLinksMobile .= sprintf($this->mlink,$l['title'],ADDRESS . '/' . $l['href'],$l['yazi']);
-            }
-
-            $this->htmlHeaderLinksMobile .= $this->languageButton;
-        }
-
-        if ($this->mcKontrol){
-
-            foreach($this->mcerceve->mobilMenuVer() as $l){
-
-                $this->htmlHeaderLinksMobile .= sprintf($this->headerLinkMobil,$l['title'],ADDRESS . '/' . $l['href'],$l['yazi'],$l['bilgi']);
-            }
-
-            $this->htmlHeaderLinksMobile .= $this->languageButton;
-        }
-    }
-
-    /**
-     * mobil cihazlarda görüntülenecek menuyü yazar.
-     * 
-     * @method htmlHeaderMobile() 
-     * @param string|null $headersinifi tercihe bağlı header css sinifi
-     * @return void
-     */
-    public function htmlHeaderMobile($headersinifi = 'degistirme'): void
-    {
-        $this->mobillink();
-
-        $this->htmlHeaderMobile = sprintf($this->headermobilyapi,$headersinifi,ADDRESS,ADDRESS . '/' . RELEASE . '-local-image' . '/' . 'uygulama' . '/' . PREFIX,$this->htmlHeaderLinksMobile);
+        return $this->htmlHeaderMenu;
     }
 
     /**
      * @method createHtmlMenu()
-     * @param mixed $headersinifi
      * @return void
      */
-    protected function createHtmlMenu(?string $headersinifi = null): void
+    protected function createHtmlMenu(): void
     {
-        $this->menulink();
+        $this->htmlHeaderMenu = sprintf($this->htmlHeaderContainer443,
 
-        $this->htmlHeaderMobile($headersinifi);
+			ADDRESS,
 
-        $this->htmlHeaderMenu .= sprintf($this->headermenuust,$headersinifi);
+			PREFIX,
+	
+			$this->createMenuLinks(),
 
-        foreach($this->headeron as $ho){
-            
-            $this->htmlHeaderMenu .= $ho;
-        }
+			$this->createHeaderBar(),
 
-        if ($this->activeIOHeader){
-            
-            $this->htmlHeaderMenu .= $this->interfaceHeader;
-        }else{
-            
-            foreach($this->headerorta as $ho){
-            
-                $this->htmlHeaderMenu .= $ho;
-            }
-        }
+			$this->setUserLinks(),
 
-        foreach($this->headerarka as $ha){
-            
-            $this->htmlHeaderMenu .= $ha;
-        }
-
-        $this->htmlHeaderMenu .= $this->headermenualt;
-
-        $this->htmlHeaderMenu .= $this->htmlHeaderMobile;
+			$this->languageButton
+		);
     }
+
+	/**
+	 * @method createSearchBar()
+	 * @return string
+	 */
+	private function createHeaderBar(): string
+	{
+		return match(true){
+
+			App::getApp('useFullAppSearch') && !$this->activeIOHeader => $this->createSearchBar(),
+
+			$this->activeIOHeader => $this->interfaceHeader,
+
+			!$this->activeIOHeader => ''
+		};
+	}
+
+	/**
+	 * @method createSearchBar()
+	 * @return string
+	 */
+	private function createSearchBar(): string
+	{
+		return '';
+	}
+
+	/**
+	 * @method createUserLinks()
+	 * @return string
+	 */
+	private function setUserLinks(): string
+	{
+		return $this->htmlMenuUserLinks;
+	}
 
     /**
      * @since 443 - name changed to frameSupport - cerceveDestek
-     * Diğer katmanlar ile - genellikle modüller ile - çerçevenin etkileşimini sağlar.
+     * [TR] Diğer katmanlar ile - genellikle modüller ile - çerçevenin etkileşimini sağlar.
+	 * [EN] Provides interaction with frame and internals / modules
      * 
      * @method frameSupport()
-     * @param $islem
-     * @param $ekislem
+     * @param $proc
+     * @param $sproc
      * @return void
      */
-    public function frameSupport($islem = null,$ekislem = null): void
+    public function frameSupport($proc = null,$sproc = null): void
     {
-        $this->process = $islem ?? null;
+        $this->process = $proc ?? null;
 
-        $this->subProcess = $ekislem ?? null;
+        $this->subProcess = $sproc ?? null;
 
-        switch ($islem):
+        switch ($this->process):
 
-            case 'merhaba':
+            case LOGINURI:
 
-                isset($ekislem) ? $this->interfaceHeader = '<h4 class="text-center mx-auto mt-2">'. $this->loadedLanguagePack->create_new_account[$this->langNumber] .'</h4>' : $this->interfaceHeader = '<h4 class="text-center mx-auto mt-2">'. $this->loadedLanguagePack->login_to_your_account[$this->langNumber] .'</h4>';
+                $this->interfaceHeader = isset($this->subProcess) ? sprintf($this->htmlHeaderInterfaceText,$this->translate('create_new_account')) : sprintf($this->htmlHeaderInterfaceText,$this->translate('login_to_your_account'));
                 
                 $this->activeIOHeader = true;
                 
@@ -736,9 +786,9 @@ class Frame{
 
             break;
 
-            case 'kullanici-islemleri':
+            case 'account-operations':
 
-                $this->interfaceHeader = '<h4 class="text-center mx-auto mt-2">'. $this->loadedLanguagePack->user_processes[$this->langNumber] .'</h4>';
+                $this->interfaceHeader = sprintf($this->htmlHeaderInterfaceText,$this->translate('user_processes'));
                 
                 $this->activeIOHeader = true;
 
@@ -746,7 +796,7 @@ class Frame{
 
             case UUI:
 
-                $this->interfaceHeader = '<h6 class="text-center mx-auto mt-2">'. $this->loadedLanguagePack->greet[$this->langNumber] .' '. AppAudit::getUserName() .'</h6>';
+                $this->interfaceHeader = sprintf($this->htmlHeaderInterfaceText,$this->translate('greet') .' '. AppAudit::getUserName());
                 
                 $this->activeIOHeader = true;
 
@@ -754,32 +804,7 @@ class Frame{
 
         endswitch;
 
-        if (isset($_SESSION['hesapno'])){
-
-            $this->htmlHeaderAppButtons = sprintf($this->headerbutontipi,ADDRESS . '/' . 'oturum-kapatiliyor',$this->loadedLanguagePack->logout[$this->langNumber]);
-
-            if ($islem !== UUI){
-                
-                $this->htmlHeaderAppButtons .= sprintf($this->headerbutontipiiki,ADDRESS . '/' . UUI,$this->loadedLanguagePack->mypage[$this->langNumber]);
-                
-            }
-            
-            $this->userAuthenticated = true;
-            
-        }elseif($this->inputScreen){
-
-            $this->htmlHeaderAppButtons = sprintf($this->headerbutontipi,ADDRESS . '/' . 'iletisim',$this->loadedLanguagePack->contact_us[$this->langNumber]);
-        }else{
-
-            $this->htmlHeaderAppButtons = sprintf($this->headerbutontipi,ADDRESS . '/' . 'merhaba',$this->loadedLanguagePack->signin[$this->langNumber]);
-        }
-
-        if (App::getApp('applicationUsersEnabled')){
-
-            $this->headerarka[1] = $this->htmlHeaderAppButtons;
-        }
-
-        ksort($this->headerarka);
+        $this->setMenuUserLinks();
 
         $this->setLanguageButton();
     }
@@ -805,36 +830,40 @@ class Frame{
         }
     }
 
-    /**
-     * modüler yapı genel ana menuyu döndürür. sayfa ustunde fixed top özelliğindedir.
-     * 
-     * @method getHtmlAppMenu() 
-     * @param string $headersinifi isteğe bağlı ana menu için css class
-     * @return string $htmlHeaderMenu
-     */
-    public function getHtmlAppMenu($headersinifi = null): string
-    {
-        $this->createHtmlMenu($headersinifi);
+	/**
+	 * @method setMenuUserLinks()
+	 * @return void
+	 */
+	private function setMenuUserLinks(): void
+	{
+		if (isset($_SESSION['account_page_number']) && App::getApp('applicationUsersEnabled')){
 
-        return $this->htmlHeaderMenu;
-    }
+            $this->htmlMenuUserLinks = sprintf($this->htmlHeaderNavUserLink,ADDRESS . '/' . 'logout',$this->translate('logout'));
+
+            if ($this->process !== UUI){
+                
+                $this->htmlMenuUserLinks .= sprintf($this->htmlHeaderButton,ADDRESS . '/' . UUI,$this->translate('mypage'));
+            }
+            
+            $this->userAuthenticated = true;
+            
+        }elseif($this->inputScreen){
+
+            $this->htmlMenuUserLinks = sprintf($this->htmlHeaderNavUserLink,ADDRESS . '/' . App::getApp('contactUri'),$this->translate('contact_us'));
+        }else{
+
+            $this->htmlMenuUserLinks = sprintf($this->htmlHeaderNavUserLink,ADDRESS . '/' . LOGINURI,$this->translate('signin'));
+        }
+	}
 
     /**
-     * @var array $appModules
-     */
-    private array $appModules;
-
-    /**
-     * Modul Çerçeve Kontrol
-     * 
-     * - Uygulama ayarlarında modul cerceve true ise
-     * - Ana modul kullan true ise
-     * -> ana modulün çerçeve ayarları (menuler vs) uygulama için varsayılan olarak kullanılır.
-     * 
-     * @method cerceveKontrol()
+     * [TR] Modul Çerçeve Kontrol
+	 * [EN] Module Frame Controller
+     
+	 * @method moduleFrameControl()
      * @return bool $mKontrol
      */
-    private function cerceveKontrol(): bool
+    private function moduleFrameControl(): bool
     {
         if (App::getModule('useModuleFrames')){
 
@@ -850,7 +879,7 @@ class Frame{
                 };
             }catch(\UnhandledMatchError $hata){
 
-                throw new VerisanatFrameException(self::infoFrame[LANG]['moduleFrame_double'] . ' : ' . $hata->getMessage());
+                throw new VerisanatFrameException(self::infoFrame[LANG]['modulcer_ikiz'] . ' : ' . $hata->getMessage());
             }
 
             if (is_string($cerceve)){
@@ -865,17 +894,18 @@ class Frame{
     }
 
     /**
-     * Modul ÇErçeve İşlem
+     * [TR] Modul ÇErçeve İşlem - modül çerçeve objelerini uygulama çerçevesine uygular
+	 * [EN] Module Frame Process - applies module frame objects to app frame
      * 
-     * @method mCerceveIslem()
+     * @method moduleFrameProcess()
      * @param string $cagiranSinif - moduladiYapi
      * @return void
      */
-    public function mCerceveIslem(string $modulAdi): void
+    public function moduleFrameProcess(string $modulAdi): void
     {
         $this->activeModule = strtolower(ClassicString::cropWord($modulAdi,'Yapi'));
 
-        if ($this->cerceveKontrol()){
+        if ($this->moduleFrameControl()){
 
             if (isset($this->mcerceve->yeniCerceveOgeleri)){
                 
@@ -887,17 +917,18 @@ class Frame{
     }
 
     /**
-     * Modüle ait çerçeve sınıfı olmadığı zaman modüler yapı için modüle ait menuyu dondurur
+     * [TR] Modüle ait çerçeve sınıfı olmadığı zaman modüler yapı için modüle ait menuyu dondurur
+	 * [EN] Used when there is no module frame but a need to change menu for the module.
      * 
-     * @method modulmenu()
-     * @param array $linkler menü öğesi - başlık - href - yazı
+     * @method setModuleMenu()
+     * @param array $menuList -> createMenuLink()
      * @return void
      */
-    public function modulmenu($linkler = null): void
+    public function setModuleMenu(array $menuList = null): void
     {
-        if (isset($linkler)){
+        if (isset($menuList)){
 
-            $this->modulmenu = $linkler;
+            $this->modulmenu = $menuList;
         }
     }
 }

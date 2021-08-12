@@ -6,18 +6,18 @@
  * Object oriented, strongly typed, up to date software in modular structure for 
  * creating web applications. Designed and documented for developers.
  * 
- * Release VTS.443.211 - Open Source Package - MPL 2.0 Licensed.
+ * Release VTS.443.222 - Open Source Package - MPL 2.0 Licensed.
  * 
  * https://onurgunescomtr@bitbucket.org/onurgunescomtr/verisanat-v.4.git
  * https://github.com/onurgunescomtr/verisanat
  * 
  * @package		Verisanat v.4.4.3 "Rembrandt"
- * @subpackage  VTS.443.211 [Tr]Verisanat Tam Sürüm - [En]Verisanat Full Version 
+ * @subpackage  VTS.443.222 [Tr]Verisanat Tam Sürüm - [En]Verisanat Full Version 
  * 
  * @author		Onur Güneş  https://www.facebook.com/onur.gunes.developer
  *                          https://www.twitter.com/onurgunescomtr
  *                          mailto:verisanat@outlook.com
- *                          https://www.verisanat.com/iletisim
+ *                          https://www.verisanat.com/contact
  * 
  * @copyright	Copyright (c) 2012 - 2021 Onur Güneş
  *              https://www.verisanat.com
@@ -115,7 +115,8 @@ class InterfaceControl{
     private bool $invalidRequestResponse;
 
     /**
-     * modül arayuzu kayıtlı mı değil mi denetler
+     * [TR] Modül arayuzu kaydı denetler
+     * [EN] Checks for module interfaces
      * 
      * @method denetle() 
      * @param string $islem
@@ -139,7 +140,8 @@ class InterfaceControl{
     }
 
     /**
-     * içyapı arayuzu kayıtlı mı değil mi denetler
+     * [TR] İçyapı arayuzu kaydı denetler
+     * [EN] Checks for internal interfaces
      * 
      * @method icYapiDenetle() 
      * @param string $d
@@ -158,7 +160,8 @@ class InterfaceControl{
     }
 
     /**
-     * Özel birim denetler
+     * [TR] Özel birim denetler
+     * [EN] Cheks for special interfaces
      * 
      * @method obDenetle() 
      * @param string $islem
@@ -217,11 +220,7 @@ class InterfaceControl{
     }
 
     /**
-     * v.4.4.3 no return - registers processRequest
-     * 
-     * v.4.4.2 işlem modulunu yada adını atar (artık döndürmüyor)
-     * v.4.0 - v.4.1 işlem belitecini / dosyasını verir
-     * 
+     * @since v.4.4.3 no return - registers processRequest - 442 sets process module or name
      * @method id() 
      * @return void
      */
@@ -250,15 +249,16 @@ class InterfaceControl{
             'verisanat' => $this->htmlDefaultScreen
         };
 
-        // the reason i put this as a variable inside the class is... i dont remember.. 
-        // lets see
-        
         $this->invalidRequestResponse = App::getApp('invalidRequestResponse');
+
+        $this->injectDefaultClasses();
     }
 
     /**
-     * Uygulama temel arayuz başlatıcısı. v.4.0 - v.4.1 arayuzgecerli (bool) donduruyordu - işlem adını yada array i döndürür
+     * [TR] Uygulama temel arayuz başlatıcı.
+     * [EN] App fundamental interface starter.
      * 
+     * @since 4.0.0 returns process name or array, before it was returning bool.
      * @method getProcess()
      * @return mixed|string|array|int $processRequest
      */

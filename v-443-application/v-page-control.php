@@ -6,18 +6,18 @@
  * Object oriented, strongly typed, up to date software in modular structure for 
  * creating web applications. Designed and documented for developers.
  * 
- * Release VTS.443.211 - Open Source Package - MPL 2.0 Licensed.
+ * Release VTS.443.222 - Open Source Package - MPL 2.0 Licensed.
  * 
  * https://onurgunescomtr@bitbucket.org/onurgunescomtr/verisanat-v.4.git
  * https://github.com/onurgunescomtr/verisanat
  * 
  * @package		Verisanat v.4.4.3 "Rembrandt"
- * @subpackage  VTS.443.211 [Tr]Verisanat Tam Sürüm - [En]Verisanat Full Version 
+ * @subpackage  VTS.443.222 [Tr]Verisanat Tam Sürüm - [En]Verisanat Full Version 
  * 
  * @author		Onur Güneş  https://www.facebook.com/onur.gunes.developer
  *                          https://www.twitter.com/onurgunescomtr
  *                          mailto:verisanat@outlook.com
- *                          https://www.verisanat.com/iletisim
+ *                          https://www.verisanat.com/contact
  * 
  * @copyright	Copyright (c) 2012 - 2021 Onur Güneş
  *              https://www.verisanat.com
@@ -47,44 +47,29 @@ class Page{
     use CommonPageElements;
 
     /**
-     * @var string $countryCitiesFile
+     * @var array $catList
      */
+    public static array $catList;
+    /**
+     * @var int $catCount
+     */
+    public static int $catCount;
+    /**
+     * @var object $catData
+     */
+    public static object $catData;
+    /**
+     * @var string $dataModule
+     */
+    public static string $dataModule = 'dergi'; 
+    /**
+     * @var mixed $pageData
+     */
+    public object|bool|null $pageData;
+
     public const countryCitiesFile = 'app-' . LANG . '-cities.json';
-    /**
-     * @var string $countryCitiesData
-     */
     public const countryCitiesData = 'app-' . LANG . '-city-data.json';
-    /**
-     * @var string $countryCities
-     */
     public const countryCities = LANG . '-city-list.json';
-    /**
-     * 
-     * COL-9 flex content area
-     * 
-     * yanbar ile kullanılabilecek ekran ogesi, col-9
-     * 
-     * @var string $biroge
-     * @param string $title öğe adı (başlık)
-     * @param string $p fotoğraf (dosya adı)
-     * @param string $cont öğe içeriği (yazı)
-     * @param string $extras sayfa eki - yorumlar - facebook eklentisi vb.
-     */
-    public const contentArea = '
-        <div class="col-md-9 d-flex p-sol-yok p-sag-duzenle kucuk-ekran-yasla mt-2">
-            <h3 class="mb-4 mx-auto mobil-yazi">%s</h3>
-            <img class="img-fluid align-self-center mx-auto mb-2" src="%s">
-            <div class="text-justify secimyok mobil-yazi yazi yazi-sayfalar">
-                %s
-            </div>
-            %s
-        </div>
-    ';
-    public const formInput = '<input type="text" name"%s" id="%s" value="">';
-
-    public const formLabel = '<label for="%s">%s</label>';
-
-    public const inputCheckBox = '<input type="checkbox" name="kendimIcin" class="custom-control-input" value="1" id="customSwitch1">';
 
     public const form = '
         <form enctype="multipart/form-data" accept-charset="UTF-8" method="post" action="%s" validate>
@@ -110,9 +95,9 @@ class Page{
      */
     public string $categoryHtmlView;
     /**
-     * @var string $cerceveMenuCss
+     * @var bool $sortingFromLast
      */
-    public string $cerceveMenuCss = 'sayfa-butunlugu';
+    private bool $sortingFromLast = false;
 
     /**
      * değiştirilecek değişken adı - yeni içerik, sprintf için %s içeren string yada array
@@ -128,26 +113,6 @@ class Page{
     }
 
     /**
-     * @method pageConsistencyCss
-     * @return void
-     */
-    public function pageConsistencyCss($sinif = null): void
-    {
-        $this->cerceveMenuCss = $sinif ?? 'sayfa-butunlugu';
-    }
-
-    /**
-     * html düzenlenmiş footer verir
-     * 
-     * @method endHtmlPage()
-     * @return string $ak
-     */
-    public function endHtmlPage(): string
-    {
-        return sprintf($this->genelfooter,$this->cerceveMenuCss,App::getApp('applicationName'),date('Y'),'Sunucu yükü: ' . Audit::getLoad());
-    }
-
-    /**
      * uygulama adını aktifse modul adını ve tarihi html düzenlenmiş olarak verir
      * 
      * @method getSalutation()
@@ -155,7 +120,7 @@ class Page{
      */
     public function getSalutation(): string
     {
-        return '<h4 class="mt-2 text-center text-danger font-weight-bold">'. App::getApp('applicationName') .'</h4><p class="text-center mt-3">'. Audit::dateTime() .'</p>';
+        return sprintf($this->htmlPageSalutation,App::getApp('applicationName'),Audit::dateTime());
     }
 
     /**
@@ -166,18 +131,6 @@ class Page{
     public function isLoading(string $topic): string
     {
         return sprintf($this->gettingReady,$topic);
-    }
-
-    /**
-     * yapışkan yan menu verir
-     * 
-     * @method yanmenuver() 
-     * @param string $icerik yan menü içeriği, genellikle linklerden oluşur
-     * @return string $ym
-     */
-    public function yanmenuver(string $icerik): string
-    {
-        return sprintf($this->yanmenukapsayici,$icerik);
     }
 
     /**
@@ -197,8 +150,6 @@ class Page{
         return '';
     }
     /**
-     * facebook açık durumdaysa like applet ini ve yorumlar applet ini döndürür
-     * 
      * @method getFacebookComments()
      * @param string $url
      * @return string $z
@@ -229,38 +180,6 @@ class Page{
     }
 
     /**
-     * modallinkli / modallinksiz çeşit - adı(html id, Audit::makeUri() ile birlikte) - başlık - içerik - varsa link - varsa linkadı
-     * 
-     * @method modalyap()
-     * @param string $cesit - modallinkli - modallinksiz
-     * @param string $adi
-     * @param string $baslik
-     * @param string $icerik
-     * @param mixed|string|null $link
-     * @param mixed|string|null $linkadi
-     * @return string $m
-     */
-    public function modalyap(string $cesit,string $adi,string $baslik,string $icerik,?string $link = null,?string $linkadi = null): string
-    {
-        return sprintf($this->$cesit,$adi,$baslik,$icerik,$link,$linkadi);
-    }
-
-    /**
-     * modal hedefi data-target, buton adı
-     * 
-     * @method modalbutonyap()
-     * @param string $adi
-     * @param mixed|string|int $butonadi - İncele
-     * @return string $mb 
-     */
-    public function modalbutonyap(string $adi,?string $butonadi = 'İncele'): string
-    {
-        return sprintf($this->modalbuton,Audit::makeUri($adi),$butonadi);
-    }
-
-    /**
-     * google tag manager body kısmını döndürür
-     * 
      * @method getGoogleTagMan()
      * @return string $googletagmanbody
      */
@@ -275,9 +194,6 @@ class Page{
     }
 
     /**
-     * html body tagını ve varsa öncü sosyal eklentileri verir
-     * google ve facebook açık durumdaysa script lerini ekler
-     * 
      * @method startHtmlBody() 
      * @param string $govdeid body javascript id si
      * @param string $govdesinif body class i
@@ -301,69 +217,17 @@ class Page{
     }
 
     /**
-     * normal sayfa kapsayıcısı - container
+     * [TR] Bootstrap öğe kapsayıcısı - container
+	 * [EN] Bootstrap unit container
      * 
      * @method cover()
-     * @param string $icerik
+     * @param string $content
      * @return string $ic
      */
-    public function cover(string $icerik): string
+    public function cover(string $content): string
     {
-        return sprintf($this->temelkapsayici,$icerik);
+        return sprintf($this->htmlBasicContainer,$content);
     }
-
-    /**
-     * mobil görünüm için kaydıkça header menuye yapısan başlık verir
-     * 
-     * @method pageHeadingMobile() 
-     * @param string $mobilyapiskanbaslik
-     */
-    public function pageHeadingMobile(string $adi): string
-    {
-        return sprintf($this->mobilyapiskanbaslik,$adi);
-    }
-    /**
-     * float left buton görünümlü başlık verir
-     * 
-     * @method pageHeading() 
-     * @param string $normalsayfabasligi
-     */
-    public function pageHeading(string $adi): string
-    {
-        return sprintf($this->normalsayfabasligi,$adi);
-    }
-    /**
-     * pageHeadingMobile() ve pageHeading() döndürür
-     * 
-     * @method getHtmlHeading()
-     * @param string $adi
-     * @return string $b
-     */
-    public function getHtmlHeading(string $adi): string
-    {
-        return $this->pageHeadingMobile($adi) . $this->pageHeading($adi);
-    }
-
-    /**
-     * @var array $catList
-     */
-    public static array $catList;
-    /**
-     * @var int $catCount
-     */
-    public static int $catCount;
-    /**
-     * @var object $catData
-     */
-    public static object $catData;
-    /**
-     * @var string $dataModule
-     */
-    public static string $dataModule = 'dergi'; 
-    /**
-     * @var mixed $pageData
-     */
-    public object|bool|null $pageData;
 
     /**
      * Page object starter with category data / count / list prepared.
@@ -428,7 +292,7 @@ class Page{
     {
         for($k = 0; $k < self::$catCount; $k++){
 
-            $this->categoryHtmlView .= sprintf($this->catCard,self::$catData[$k]->katfoto,self::$catData[$k]->katozeti);
+            $this->categoryHtmlView .= sprintf($this->htmlCategoryCardItem,self::$catData[$k]->katfoto,self::$catData[$k]->katozeti);
         }
 
         return $this->categoryHtmlView;
@@ -474,11 +338,6 @@ class Page{
     }
 
     /**
-     * @var bool $sortingFromLast
-     */
-    private bool $sortingFromLast = false;
-
-    /**
      * @method orderBy()
      * @param string $point - first / last
      * @return void
@@ -488,6 +347,7 @@ class Page{
         match($point){
 
             'first' => $this->sortingFromLast = true,
+            
             'last' => $this->sortingFromLast = false
         };
     }
@@ -503,7 +363,7 @@ class Page{
 
         isset($n) ? $adet = $n : $adet = $this->unitsToShow;
 
-        $kartlar = null;
+        $htmlCardItem = null;
 
         if ($this->sortingFromLast){
 
@@ -512,11 +372,11 @@ class Page{
 
         for($toplam = 0; $toplam < $adet; $toplam++){
 
-            $kartlar .= sprintf($this->kartlar,
+            $htmlCardItem .= sprintf($this->htmlCardItem,
 
                 ADDRESS . '/' . MODULISLEMLER[self::$dataModule]['processInterface'] . '/' . $this->pageData[$toplam]->gorunenadi,
 
-                ADDRESS . '/' . RELEASE . '-local-image' . '/' . 'kullanici' .'/' . $this->pageData[$toplam]->foto,
+                ADDRESS . '/' . 'lokal-gorsel' . '/' . 'kullanici' .'/' . $this->pageData[$toplam]->foto,
 
                 $this->pageData[$toplam]->adi,
 
@@ -526,9 +386,7 @@ class Page{
             );
         }
 
-        $kartblok = sprintf($this->sayfaKartBlogu,$kartlar);
-
-        return $kartblok;
+        return sprintf($this->htmlPageCardBlock,$htmlCardItem);
     }
 
     /**
@@ -619,17 +477,6 @@ class Page{
         unset($dos);
 
         return $vSehirler;
-    }
-
-    /**
-     * @method getPage()
-     * @return string
-     */
-    public static function getPage(string $title,string $p,string $cont,?string $extras = null): string
-    {
-        $photo = ADDRESS . '/' . RELEASE . '-local-image' . '/' . 'kullanici' . '/' .  $p;
-
-        return sprintf(self::contentArea,$title,$photo,$cont,$extras);
     }
 }
 ?>

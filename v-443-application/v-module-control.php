@@ -6,18 +6,18 @@
  * Object oriented, strongly typed, up to date software in modular structure for 
  * creating web applications. Designed and documented for developers.
  * 
- * Release VTS.443.211 - Open Source Package - MPL 2.0 Licensed.
+ * Release VTS.443.222 - Open Source Package - MPL 2.0 Licensed.
  * 
  * https://onurgunescomtr@bitbucket.org/onurgunescomtr/verisanat-v.4.git
  * https://github.com/onurgunescomtr/verisanat
  * 
  * @package		Verisanat v.4.4.3 "Rembrandt"
- * @subpackage  VTS.443.211 [Tr]Verisanat Tam Sürüm - [En]Verisanat Full Version 
+ * @subpackage  VTS.443.222 [Tr]Verisanat Tam Sürüm - [En]Verisanat Full Version 
  * 
  * @author		Onur Güneş  https://www.facebook.com/onur.gunes.developer
  *                          https://www.twitter.com/onurgunescomtr
  *                          mailto:verisanat@outlook.com
- *                          https://www.verisanat.com/iletisim
+ *                          https://www.verisanat.com/contact
  * 
  * @copyright	Copyright (c) 2012 - 2021 Onur Güneş
  *              https://www.verisanat.com
@@ -52,46 +52,63 @@ class ModuleBase{
 
     use Builder;
 
+	use Screen;
+
     /**
-     * @var bool $benim ana modul bu mu değil mi
+     * [EN] Determines if loaded module is sudo or not
+     * [TR] Sudo modül değişkeni
+     * 
+     * @var bool $isSudoModule
      */
-    public bool $benim;
+    public bool $isSudoModule;
     /**
-     * @var string $anamodul uygulama çerçeve yapısı ve değişiklikleri
+     * @var string $mainModuleName
      */
-    protected string|null $anamodul;
+    protected string|null $mainModuleName;
     /**
-     * Head te bulunması gereken eklentileri array olarak barındırır
-     * @var array $headekleri
+     * [TR] Head te bulunması gereken eklentileri array olarak barındırır
+     * [EN] Additional frame elements for head / html, contained as an array
+     * 
+     * @var array $frameAdditions
      */
-    private array|null $headekleri;
+    private array|null $frameAdditions;
     /**
-     * ekranolustur a eklenebilecek html parçaları barındırır.
-     * @var array $ekranekleri
+     * [TR] eklenebilecek html parçaları barındırır. ; () vb barındıramaz.
+     * [EN] contains extra html screen parts. string can not include ; () etc characters.
+     * 
+     * @var array $screenAdditions
      */
-    private array|null $ekranekleri;
+    private array|null $screenAdditions;
     /**
-     * @var string $ekran tamamlanmış tam html sayfa
+     * [TR] Tamamlanmış tam html sayfa
+     * [EN] Generated screen in html form
+     * 
+     * @var string $moduleScreen
      */
-    private string|null $ekran = null;
+    private string|null $moduleScreen = null;
     /**
-     * @var string $modulbilgikutulari yazılmış toast iletiler
+     * @var string $appModuleToastBox
      */
-    private $modulbilgikutulari;
+    private $appModuleToastBox;
     /**
-     * @var string $bilgiver Http::guide() yada Http::inform() ile yönlendirilmiş uyarı başarı metnini barındırır
+     * [TR] Http::guide() yada Http::inform() ile yönlendirilmiş uyarı başarı metnini barındırır
+     * [EN] contains redirected warning or error html formatted information to app from module.
+     * 
+     * @var string|null $appModuleReport
      */
-    private string|null $bilgiver;
+    private string|null $appModuleReport;
     /**
-     * @var string $testortami tam html okunmuş dosya
+     * [TR] modüle iletilen işlem adı
+     * [EN] process that send from App to module
+     * 
+     * @var string $appModuleRequest 
      */
-    private string|null $testortami;
+    public string|null $appModuleRequest;
     /**
-     * @var string $istek modüle iletilen işlem adı
-     */
-    public string|null $istek;
-    /**
-     * @var object $sn islem gören nesne
+     * [TR] islem gören nesne
+     * [EN] Unit selected for module that ready to process
+     * 
+     * @var object $sn
      */
     public object $sn;
     /**
@@ -101,8 +118,8 @@ class ModuleBase{
      */
     public string|null $moduleMessages;
     /**
-     * 443 - simplified - sadeleştirildi
-     * temel modul sabitleri
+     * [EN] 443 simplified app module constants
+     * [TR] 443 sadeleştirilmiş modul sabitleri
      * 
      * @var array $integrity
      */
@@ -110,101 +127,116 @@ class ModuleBase{
         'modulesLoaded'
     ];
     /**
-     * temel modul değişkenleri
+     * [TR] Temel modul değişkenleri
+     * [EN] Essential module variables
+     * 
      * @var array $essentialModuleElements
      */
     public array $essentialModuleElements = [
         'dbTableName',
-        'veriadi',
-        'yapidegistir',
-        'cercevedegistir',
+        'sharedDataName',
+        'modifyPageElement',
+        'modifyFrameElement',
         'processInterface',
-        'etkinarayuz',
+        'operativeInterface',
         'operationInterface',
         'processUnit',
         'uniqueIdentifierProperty'
     ];
     /**
-     * @var array $modulDegistirilebilirOgeler
+     * @var array $moduleModifiableElements
      */
-    public array $modulDegistirilebilirOgeler = [
-        'yapidegistir',
-        'cercevedegistir'
+    public array $moduleModifiableElements = [
+        'modifyPageElement',
+        'modifyFrameElement'
     ];
     /**
-     * Modül öğe tanımlayıcı varsayılan - gorunenadi - tablo kolonu
+     * [TR] Modül öğe tanımlayıcı tablo kolonu
+     * [EN] unique db identifier column contains public string for module unit
      * 
      * @var string $publicIdentifierProperty
      */
     public string $publicIdentifierProperty = 'gorunenadi';
     /**
-     * modul arayüzü
+     * [TR] Modül kendi arayüzünde bir ana sayfa / kendi arayüzünü barındırabilir.
+     * [EN] Determines if module can or cannot provide its own main page / main UI.
      * 
-     * @var string $arayuz
+     * @var bool $operativeInterface
      */
-    public string $arayuz;
+    public bool $operativeInterface;
     /**
-     * @var bool $etkinarayuz
-     */
-    public bool $etkinarayuz;
-    /**
-     * module özel işleme alınacak öğe genel adı
+     * [TR] Module özel işleme alınacak öğe genel adı
+     * [EN] Specific to module, a name globally indicates the type to be processed
      * 
      * @var string $processUnit
      */
     public string $processUnit;
     /**
-     * module özel eşsiz olarak kullanılacak tablo kolonu adı - essizalan 
+     * [TR] Module özel eşsiz olarak kullanılacak tablo kolonu adı - essizalan
+     * [EN] Specific to module, the database column name unique to each module unit
      * 
      * @var string $uniqueIdentifierProperty
      */
     public string $uniqueIdentifierProperty;
     /**
-     * uygulamada açık paketlerin tamamı
+     * [TR] Uygulamada açık paketlerin tamamı
+     * [EN] Every available module package name in the app
      * 
      * @var array $modulesLoaded
      */
     public array $modulesLoaded;
     /**
-     * modul veritabanı tablo adı
+     * [TR] Modul veritabanı tablo adı
+     * [EN] Module database table name
      * 
      * @var string $dbTableName
      */
     public string $dbTableName;
     /**
-     * modüle özgü yapı değişkenleri array i
+     * [TR] Modüle özgü sayfa değişkenleri dizisi
+     * [EN] Page elements to be modified as array
      * 
-     * @var array $yapidegistir
+     * @var array $modifyPageElement
      */
-    public array|null $yapidegistir;
+    public array|null $modifyPageElement;
     /**
-     * modüle özgü çerçeve değişkenleri array i
+     * [TR] Modüle özgü çerçeve değişkenleri dizisi
+     * [EN] Frame elements to be modified as array
      * 
-     * @var array $cercevedegistir
+     * @var array $modifyFrameElement
      */
-    public array|null $cercevedegistir;
+    public array|null $modifyFrameElement;
     /**
-     * @var string $operationInterface modüle özgü işlem arayuzü adı
+     * [TR] Modüle özgü işlem arayuzü adı
+     * [EN] Specific to each module, interface name for a module
+     * 
+     * @var string $operationInterface
      */
     public string $operationInterface;
     /**
-     * @var bool $processRequest
+     * [TR] Modüle özgü modül öğe işlemi isteği
+     * [EN] Request is for a module unit or general module interface
+     * 
+     * @var bool $moduleUnitProcessRequest
      */
-    public bool $processRequest = false;
+    public bool $moduleUnitProcessRequest = false;
     /**
      * @var bool $responseAvailable
      */
     public bool $responseAvailable = false;
     /**
-     * @var array $otherModules uygulamaya dahil diğer moduller yapı  - adı => veritabanı tablosu
+     * [TR] Uygulamaya dahil diğer moduller yapı  - adı => veritabanı tablosu
+     * [EN] Other modules which currently not in running, as a name -> DB table name array
+     * 
+     * @var array $otherModules
      */
     public array $otherModules;
     /**
-     * 443 - array at all releases
+     * [TR] Modüllere özgü oturum bilgilerini barındırır.
+     * [EN] Specific to a process, an array contains module session data
      * 
-     * v.Tam object
-     * v.Pratik array
-     * @var array $moduleSession modüllere özgü oturum bilgilerini barındırır.
+     * @since 4.4.3 - array at all releases
+     * @var array $moduleSession
      */
     public array $moduleSession;
     /**
@@ -214,61 +246,85 @@ class ModuleBase{
     /**
      * @var array $infoModuleError
      */
-    public const infoModuleError = array(
-        'm_surum_az' => '500.002.Active module needs to be updated to application version.',
-        'm_veri_yok' => '500.003.A necessary module configuration element is missing for the application.',
-        'm_veri_eksik' => '500.004.Undefined module configuration variable.',
-        'm_config_up' => '200.341.Verisanat v.4 application module is under maintenance, please check back later.'
-    );
+    public const infoModuleError = [
+        'EN' => [
+            'm_surum_az' => '500.002.Active module needs to be updated to application version.',
+            'm_veri_yok' => '500.003.A necessary module configuration element is missing for the application.',
+            'm_veri_eksik' => '500.004.Undefined module configuration variable.',
+            'm_config_up' => '200.341.Verisanat v.4 application module is under maintenance, please check back later.'
+        ],
+        'TR' => [
+            'm_surum_az' => '500.002.Aktif modül uygulama sürümüne yükseltilmelidir.',
+            'm_veri_yok' => '500.003.Gerekli modül konfigurasyon elementi uygulama için eksik durumdadır.',
+            'm_veri_eksik' => '500.004.Tanımsız modül konfigurasyon değişkeni.',
+            'm_config_up' => '200.341.Bu Verisanat v.4 uygulaması modül bakım çalışması uygulamaktadır, lütfen daha sonra tekrar deneyiniz.'
+        ]
+    ];
     /**
-     * @var array $modulBilgiSatirlari
+     * @var array $infoModuleHttp
      */
-    public array $modulBilgiSatirlari = array(
-        'yok' => '200.097.API yetersiz işlem.',
-        'yok_cg' => '200.099.API yetersiz işlem.Cevap yok.',
-        'yetkisiz' => '200.098.API yetkisiz işlem.',
-        'oge_yok' => 'Linklerde bir problem oluşmuş yada eski bir kayıt istenmiş olabilir. <br> Bu veya benzer linklerin ısrarcı biçimde kullanımı uygulama üzerinde yasaklanmanıza yol açabilir.'
-    );
+    public array $infoModuleHttp = [
+        'TR' => [
+            'p_active' => 'modül aktif',
+            'main_p_active' => 'modül ana sayfa aktif',
+            'yok' => '200.097.API yetersiz işlem.',
+            'yok_cg' => '200.099.API yetersiz işlem.Cevap yok.',
+            'yetkisiz' => '200.098.API yetkisiz işlem.',
+            'oge_yok_404' => '200.096.İstenilen öğe bulunamadı.',
+            'oge_yok' => 'Linklerde bir problem oluşmuş yada eski bir kayıt istenmiş olabilir. <br> Bu veya benzer linklerin ısrarcı biçimde kullanımı uygulama üzerinde yasaklanmanıza yol açabilir.'
+        ],
+        'EN' => [
+            'p_active' => 'module active',
+            'main_p_active' => 'module main page active',
+            'yok' => '200.097.API insufficient process request.',
+            'yok_cg' => '200.099.API insufficient process.Response prohibited.',
+            'yetkisiz' => '200.098.API unauthorized process.',
+            'oge_yok_404' => '200.096.Requested module element couldnt be found.',
+            'oge_yok' => 'There may be a modified link outside the app or this is an old unit request. <br> Insisting on using this kind of links may ban you for app.'
+        ]
+    ];
 
     /**
      * @method checkModuleConsistency()
-     * @param string $cevap
-     * @param string|null $ekBilgi
+     * @param string $response
+     * @param string|null $extInfo
      * @return void
      */
-    private function checkModuleConsistency(string $cevap,?string $ekBilgi = null): void
+    private function checkModuleConsistency(string $response,?string $extInfo = null): void
     {
-        $cevap = isset($ekBilgi) ? self::infoModuleError[$cevap] . ' içerik: ' . $ekBilgi : self::infoModuleError[$cevap];
+        $response = isset($extInfo) ? self::infoModuleError[LANG][$response] . ' içerik: ' . $extInfo : self::infoModuleError[LANG][$response];
 
         if (LOKAL){
             
-            die($cevap);
+            die($response);
         }else{
 
-            Scribe::appLog($cevap);
+            Scribe::appLog($response);
 
-            die(self::infoModuleError['m_config_up']);
+            die(self::infoModuleError[LANG]['m_config_up']);
         }
     }
 
     /**
      * @method checkModuleVersion()
-     * @param string $moduladi
+     * @param string $mnGiven Module Name Given
      * @return void
      */
-    public function checkModuleVersion(string &$moduladi): bool
+    public function checkModuleVersion(string &$mnGiven): bool
     {
-        return version_compare(MODULISLEMLER[$moduladi]['versiyon'],VER,'<');
+        return version_compare(MODULISLEMLER[$mnGiven]['versiyon'],VER,'<');
     }
 
     /**
-     * Yapı sınıfını modulde oluşturur.
-     * @since 4.3.0 [EN]Instantiate Frame and Page in module [TR]Çerçeve sınıfını modulde oluşturur.
+     * [TR] 443 Yapı sınıfını modulde oluşturur. 430 Çerçeve sınıfını modulde oluşturur.
+     * [EN] 443 Creates main structure class in module. 430 Creates frame class in module.
+     * @since 4.4.3 Other protocols removed in open source pack
+     * @see startStructure_default()
      * 
-     * @method yapiBaslat()
+     * @method startStructure()
      * @return void
      */
-    public function yapiBaslat(): void
+    public function startStructure(): void
     {
         Warden::setSession();
 
@@ -283,32 +339,34 @@ class ModuleBase{
         
             case 'http':
             
-                $this->frame = new Frame($this->moduldil('d',null));
+                $this->frame = new Frame($this->setModuleLang('d','turkce'));
 
                 $this->vui = new Page;
 
-                $this->frame->mCerceveIslem(get_called_class());
+                $this->frame->moduleFrameProcess(get_called_class());
 
                 $this->frame->frameSupport($this->process,$this->subProcess);
 
             break;
-        default:
+            
+            default:
 
-            // console - $this->frame = new AgCerceve;
-        
-        break;
+                // Console OS removed
+            
+            break;
         
         endswitch;
     }
 
     /**
-     * uygulama sabitlerini atar
+     * [TR] uygulama sabitlerini atar.
+     * [EN] sets application details, constants, variables.
      * 
-     * @method sabitAl()
-     * @param array $integrity
+     * @method setAppLedger()
+     * @param array $s
      * @return void
      */
-    public function sabitAl(array $s): void
+    protected function setAppLedger(array $s): void
     {
         foreach($this->integrity as $t){
 
@@ -317,42 +375,39 @@ class ModuleBase{
     }
 
     /**
-     * Ana modulu alır, modulun ana modul olup olmadığını kontrol eder
-     * 
-     * @method aktifModuller()
+     * @method setModuleHierarchy()
      * @return void
      */
-    public function aktifModuller(): void
+    private function setModuleHierarchy(): void
     {
-        $this->anamodul = array_shift($this->modulesLoaded);
+        $this->mainModuleName = array_shift($this->modulesLoaded);
 
-        $this->benim = $this->anamodul === $this->moduladi ? true : false;
+        $this->isSudoModule = $this->mainModuleName === $this->moduleName ? true : false;
     }
 
     /**
-     * diğer modüllerin izin verilen verisini $otherModules e (array) atar. (yapı adı => veritabanı tablosu)
-     * 
-     * @method paylasilanVeri()
+     * @method setModuleSharedData()
      * @return void
      */
-    public function paylasilanVeri(): void
+    private function setModuleSharedData(): void
     {
         foreach($this->modulesLoaded as $t){
 
             if (MODULISLEMLER[$t]['veripaylasimi']){
 
-                $this->otherModules[MODULISLEMLER[$t]['veriadi']] = MODULISLEMLER[$t]['dbTableName'];
+                $this->otherModules[MODULISLEMLER[$t]['sharedDataName']] = MODULISLEMLER[$t]['dbTableName'];
             }
         }
     }
 
     /**
-     * modüller arası iletiyi yazar
+     * [TR] Modüller arası iletiyi yazar
+     * [EN] sets inter modular public report
      * 
-     * @method getModuleReport()
+     * @method getMessages()
      * @return mixed|null|string $moduleMessages
     */
-    public function getModuleReport()
+    public function getMessages(): string|null
     {
         $this->moduleMessages = $_SESSION['public_info_container'] ?? null;
 
@@ -362,62 +417,58 @@ class ModuleBase{
     }
 
     /**
-     * modüller için dil seçeneğini çerçeve için alır.
-     * 
-     * @method moduldil()
-     * @param string $deger dil degeri
-     * @param null $varsayilan
-     * @return string|null $deger
+     * @method setModuleLang()
+     * @param string $langValue
+     * @param null $langDefault
+     * @return string|null $langValue
      */
-    public function moduldil(string $deger,?string $varsayilan): string|null
+    public function setModuleLang(string $langValue,?string $langDefault): string|null
     {
-        return Http::__gx($deger,$varsayilan);
+        return Http::__gx($langValue,$langDefault);
     }
 
     /**
-     * modul sabitlerini atar
-     * 
-     * @method temelYapi()
-     * @param string $moduladi geçerli modul adı
+     * @method moduleLaunchControl()
+     * @param string $moduleName
      * @return void
      */
-    public function temelYapi(string $moduladi): void
+    public function moduleLaunchControl(string $moduleName): void
     {
-        if ($this->checkModuleVersion($moduladi)){
+        if ($this->checkModuleVersion($moduleName)){
 
-            die(self::infoModuleError['m_surum_az']);
+            die(self::infoModuleError[LANG]['m_surum_az']);
         }
 
-        $yetersiz = [];
+        $insufficient = [];
 
-        $eksik = [];
+        $missing = [];
         
         foreach($this->essentialModuleElements as $t){
 
-            if (!array_key_exists($t,MODULISLEMLER[$moduladi])){
+            if (!array_key_exists($t,MODULISLEMLER[$moduleName])){
 
-                $yetersiz[] = $t;
-            }elseif(is_null(MODULISLEMLER[$moduladi][$t]) && !in_array($t,$this->modulDegistirilebilirOgeler,true)){
+                $insufficient[] = $t;
+            }elseif(is_null(MODULISLEMLER[$moduleName][$t]) && !in_array($t,$this->moduleModifiableElements,true)){
             
-                $eksik[] = $t;
+                $missing[] = $t;
             }else{
 
-                $this->$t = MODULISLEMLER[$moduladi][$t];
+                $this->$t = MODULISLEMLER[$moduleName][$t];
             }
         }
 
-        if (count($eksik) > 0){
+        if (count($missing) > 0){
 
-            $this->checkModuleConsistency('m_veri_eksik',implode(' - ',$eksik));
+            $this->checkModuleConsistency('m_veri_eksik',implode(' - ',$missing));
         }
 
-        if (count($yetersiz) > 0){
+        if (count($insufficient) > 0){
 
-            $this->checkModuleConsistency('m_veri_yok',implode(' - ',$yetersiz));
+            $this->checkModuleConsistency('m_veri_yok',implode(' - ',$insufficient));
         }
     }
 
-    public function __construct(array $up,array $sabit = null)
+    public function __construct(array $up,array $ledger = null)
     {
         $this->setProc($up);
 
@@ -425,59 +476,68 @@ class ModuleBase{
 
         if ($this->subProcess !== null || $this->one !== null || $this->two !== null){
 
-            $this->processRequest = true;
+            $this->moduleUnitProcessRequest = true;
         }
 
-        $this->sabital($sabit);
+        $this->setAppLedger($ledger);
 
-        $this->aktifmoduller();
+        $this->setModuleHierarchy();
 
-        $this->paylasilanveri();
+        $this->setModuleSharedData();
     }
 
     /**
+     * [EN] Auto module launcher, when there is no module handle functions defined (id's) enables app -> module -> request route.
+     * [TR] Otomatik modül başlatıcı. Modül id fonksiyonu tanımlı olmadığında app -> modul -> istek yolunu yönetir.
+     * 
      * @method verisanatClassic()
      * @return void
      */
     public function verisanatClassic(string $appRequest = null): void
     {
-        $this->yapiBaslat();
+        $this->startStructure();
         
-        $this->modulBilgiVer();
+        $this->setAppModuleReport();
 
-        $this->istekIsle($appRequest);
+        $this->setAppRequest($appRequest);
 
-        $this->anaIslem();
+        $this->moduleAutoHandler();
     }
 
     /**
-     * $istek e göre modül çağrısını yönetir
+     * [TR] 443 $appModuleRequest e göre modül çağrısını yönetir. 
+     * [EN] 443 used when automatic module running, classic operations
      * 
-     * @method anaIslem()
+     * @method moduleAutoHandler()
      * @return void
      */
-    public function anaIslem(): void
+    public function moduleAutoHandler(): void
     {
-        $this->moduleSession[$this->moduladi]['benzersiz'] = Audit::randStrLight(12);
+        $this->moduleSession[$this->moduleName]['benzersiz'] = Audit::randStrLight(12);
 
-        $this->moduleSession[$this->moduladi]['dizi'] = [];
+        $this->moduleSession[$this->moduleName]['dizi'] = [];
 
-        switch($this->istek):
+        $this->startModuleScreen();
+
+        switch($this->appModuleRequest):
+
             case 'main-page':
 
                 call_user_func([$this,'modulAnasayfa']);
 
             break;
+
             case null:
 
-                call_user_func([$this,'arayuzTemelKontrol']);
+                call_user_func([$this,'interfaceInspection']);
 
                 call_user_func([$this,'modulArayuz']);
 
             break;
+            
         endswitch;
 
-        $this->ekranver();
+        $this->sendScreen();
 
         exit;
     }
@@ -485,27 +545,27 @@ class ModuleBase{
     /**
      * modül den dönecek ekranı hazırlar.
      * 
-     * @method ekranOlustur()
+     * @method createScreen()
      * @param string|null $bu
      * @return void
      */
-    public function ekranOlustur(?string $bu = null): void
+    public function createScreen(?string $bu = null): void
     {
-        $this->ekran .= $bu;
+        $this->moduleScreen .= $bu;
 
-        if (isset($this->bilgiver)){
+        if (isset($this->appModuleReport)){
             
-            $this->bilgiver = null;
+            $this->appModuleReport = null;
         }
 
-        $this->arayuzCevapKontrol();
+        $this->setInterfaceResponse();
     }
 
     /**
-     * @method arayuzCevapKontrol()
+     * @method setInterfaceResponse()
      * @return void
      */
-    private function arayuzCevapKontrol(): void
+    private function setInterfaceResponse(): void
     {
         if (!$this->responseAvailable){
 
@@ -514,54 +574,50 @@ class ModuleBase{
     }
 
     /**
-	 * 443 handles screen response.
-	 * 
-     * ekranı gönderir
-     * 
-     * @method ekranver()
-     * @return string $ekran
+	 * @method sendScreen()
+     * @return string $moduleScreen
      */
-    private function ekranver()
+    private function sendScreen()
     {
         if (PROTOKOL === 'http'){
 
             if ($this->responseAvailable){
 
-                $this->ekranOlustur($this->vui->endHtmlPage());
+                $this->createScreen($this->defaultPageJS);
+                
+                $this->moduleScreen .= match($this->appModuleRequest){
 
-                $this->ekranOlustur($this->sayfascriptleri);
+                    'main-page' => $this->showModuleProcessing($this->moduleName,true),
 
-                $this->ekran .= match($this->istek){
-
-                    'main-page' => $this->modulgoster($this->moduladi,'main-page'),
-
-                    null => $this->modulgoster($this->moduladi)
+                    null => $this->showModuleProcessing($this->moduleName)
                 };
 
-                $this->ekranOlustur($this->sayfasonu);
+                $this->createScreen($this->endHtmlPage());
 
-                Http::respond($this->ekran);
+                Http::respond($this->moduleScreen);
             }else{
 
                 header('HTTP/1.1 404 Not Found',true,404);
 
-                die($this->modulBilgiSatirlari['yok_cg']);
+                die($this->infoModuleHttp[LANG]['yok_cg']);
             }
         }
 
-		// console - 443 server types openSource removed.
+		// console - OS removed.
     }
 
     /**
-     * Protokol http - display: none ile birlikte, çalışan modül adını verir
+     * [TR] Protokol http - display: none ile birlikte, çalışan modül adını verir
+     * [EN] Shows processing module name in http protocol in css display:none in screen
      * 
-     * @method modulgoster() 
-     * @param string $adi
+     * @method showModuleProcessing() 
+     * @param string $mName
+     * @param bool $mPage
      * @return string $m
      */
-    private function modulgoster($adi = null,$as = null)
+    private function showModuleProcessing($mName = null,$mPage = false)
     {
-        return isset($as) ? sprintf($this->anasayfagosterhtml,ucfirst($adi)) : sprintf($this->modulgosterhtml,ucfirst($adi));
+        return $mPage ? sprintf($this->htmlModuleShowInterface,ucfirst($mName),$this->infoModuleHttp[LANG]['main_p_active']) : sprintf($this->htmlModuleShowInterface,ucfirst($mName),$this->infoModuleHttp[LANG]['p_active']);
     }
 
     /**
@@ -577,43 +633,46 @@ class ModuleBase{
     }
 
     /**
-     * Ana işlem tarafından çağırılan her modül için geçerli temel kontrol fonksiyonu
+     * [TR] Ana işlem tarafından çağırılan her modül için geçerli temel kontrol fonksiyonu
+     * [EN] Regulative check for the interface request, orginating from main process
      * 
-     * @method arayuzTemelKontrol()
+     * @method interfaceInspection()
      * @return void
      */
-    public function arayuzTemelKontrol(): void
+    public function interfaceInspection(): void
     {
-        if ($this->processRequest && $this->{$this->processUnit} === null && !$this->etkinarayuz){
+        if ($this->moduleUnitProcessRequest && $this->{$this->processUnit} === null && !$this->operativeInterface){
 
             if ($this->invalidRequestResponse){
                 
-                $this->modulbilgi($this->modulBilgiSatirlari['oge_yok']);
+                $this->setModuleToast($this->infoModuleHttp[LANG]['oge_yok']);
 
-                Http::guide(ADDRESS,'error','İstenilen öğe bulunamadı');
+                Http::guide(ADDRESS,'error',$this->infoModuleHttp[LANG]['oge_yok_404']);
             }else{
 
                 header('HTTP/1.1 404 Not Found',true,404);
 
-                die($this->modulBilgiSatirlari['yok']);
+                die($this->infoModuleHttp[LANG]['yok']);
             }
         }
 
-        if (!$this->processRequest && !$this->etkinarayuz){
+        if (!$this->moduleUnitProcessRequest && !$this->operativeInterface){
 
             header('HTTP/1.1 404 Not Found',true,404);
 
-            die($this->modulBilgiSatirlari['yetkisiz']);
+            die($this->infoModuleHttp[LANG]['yetkisiz']);
         }
     }
 
     /**
-     * v.4.4.1 modül işlem öğesi isteği var mı kontrol eder.
+     * [TR] Modül işlem öğesi isteği var mı kontrol eder.
+     * [EN] Checks if there is a module unit request. Can be used in module development
      * 
-     * @method modulOgesiTalep()
+     * @deprecated 4.4.1
+     * @method isModuleUnitRequest()
      * @return bool
      */
-    public function modulOgesiTalep(): bool
+    public function isModuleUnitRequest(): bool
     {
         if (!is_null($this->{$this->processUnit})){
 
@@ -624,39 +683,33 @@ class ModuleBase{
     }
 
     /**
-     * v.Tam
-     * Modüllere özgü oturum bilgilerini alır. moduloturum objesinde moduladi objesine ekler
-     * Tüm modüller için string moduladi->benzersiz ve array moduladi->dizi bulunur.
+     * [EN] Sets module variable and data to "module object"
+     * [TR] modül objesine değişken ve değer atar.
      * 
-     * v.Pratik
-     * Modüllere özgü oturum bilgilerini alır. moduloturum array inda moduladi array ina veri ekler
-     * Tüm modüller için string moduladi[benzersiz] ve array moduladi[dizi] bulunur.
-     * @method oturumVeri()
-     * @param string $deger
-     * @param string|int|mixed $veri
+     * @method setModuleSessionData()
+     * @param string $variable
+     * @param string|int|mixed $data
      * @return void
      */
-    public function oturumveri(string $deger,$veri): void
+    public function setModuleSessionData(string $variable,$data): void
     {
-        $this->moduleSession[$this->moduladi]->dizi[$deger] = $veri;
+        $this->moduleSession[$this->moduleName][$variable] = $data;
     }
 
     /**
-     * modüle iletilen isteği $istek e atar
-     * 
-     * @method istekIsle()
-     * @param string $i modüle iletilen istek
+     * @method setAppRequest()
+     * @param string $appProc  -> appModuleRequest
      * @return void
      */
-    public function istekIsle(string $i = null): void
+    public function setAppRequest(string $appProc = null): void
     {
-        $this->istek = $i ?? null;
+        $this->appModuleRequest = $appProc ?? null;
     }
 
     /**
-     * @method goruntulenme()
+     * @method moduleUnitUsage()
      */
-    protected function goruntulenme(): void
+    protected function moduleUnitUsage(): void
     {
         $this->sn->goruntulenme = (int)$this->sn->goruntulenme + (int)1;
         
@@ -664,67 +717,73 @@ class ModuleBase{
     }
 
     /**
-     * @method etkilesimModulKopru()
-     * @param string $etkilesimNo
-     * @param string $madi
-     * @param string $mb şifreli
-     * @param string $kb şifreli
+     * @method interactionModuleBridge()
+     * @param string $iidPage Interaction ID Page
+     * @param string $mName Module Name
+     * @param string $unitPackage encrypted unit package
+     * @param string $userPackage encrypted user package
      * @return void
      */
-    public function etkilesimModulKopru(string $etkilesimNo,string $madi,string $mb,string $kb): void
+    public function interactionModuleBridge(string $iidPage,string $mName,string $unitPackage,string $userPackage): void
     {
-        $d = \Model::factory('VsModulEtkilesim')->useIdColumn('sayfano')->findOne($etkilesimNo);
+        $d = \Model::factory('VsModulEtkilesim')->useIdColumn('sayfano')->findOne($iidPage);
 
         if (is_bool($d) && !$d){
 
             $d = \Model::factory('VsModulEtkilesim')->create();
 
-            $d->sayfano = $etkilesimNo;
+            $d->sayfano = $iidPage;
             $d->durumu = 1;
-            $d->moduladi = $madi;
+            $d->app_module_name = $mName;
             $d->girisadedi = 1;
             $d->kayittarihi = date('d-m-Y H:i:s');
-            $d->paket_bilgi = $mb;
-            $d->kullanici_bilgi = $kb;
+            $d->paket_bilgi = $unitPackage;
+            $d->kullanici_bilgi = $userPackage;
             $d->ip_adresi = $_SERVER['REMOTE_ADDR'];
             
-            if ($madi === 'magaza'){
+            if ($mName === 'magaza'){
 
                 $d->modul_bilgi = serialize(json_encode(array('siparisNo' => Audit::randStrLight(32))));
             }
 
-            if (isset($_SESSION['hesapno'])){
+            if (isset($_SESSION['account_page_number'])){
 
-                $d->kullanici_hesap_bilgi = $_SESSION['hesapno'];
+                $d->kullanici_hesap_bilgi = $_SESSION['account_page_number'];
             }
         }else{
 
             $d->girisadedi = (int)$d->girisadedi + 1;
-            $d->paket_bilgi = $mb;
-            $d->kullanici_bilgi = $kb;
+            $d->paket_bilgi = $unitPackage;
+            $d->kullanici_bilgi = $userPackage;
         }
         
         $d->save();
     }
 
     /**
-     * Tüm modüller için protokole göre aynı olan ekran parçalarını hazırlar
+     * Tüm modüller için protokole göre aynı olan moduleScreen parçalarını hazırlar
      * 
-     * @method onTanimliEkran()
-     * @param string $bodyid
-     * @param string $bodysinif
+     * @method startModuleScreen()
      * @return void
      */
-    public function onTanimliEkran(?string $bodyid = null,?string $bodysinif = null): void
+    protected function startModuleScreen(): void
     {
         if (PROTOKOL === 'http'){
 
             if ($this->{$this->processUnit} !== null && $this->one === null && $this->uniqueIdentifierProperty === $this->publicIdentifierProperty){
 
-                $this->nesnebul();
+                $this->setModuleUnit();
             }
 
-            $this->ekran = $this->frame->getHtmlHead($this->headEklentileri()) . $this->vui->startHtmlBody($bodyid,$bodysinif) . $this->modulbilgikutulari . $this->getModuleReport();
+            $this->moduleScreen = $this->frame->getHtmlHead($this->headEklentileri()) .
+                
+                $this->vui->startHtmlBody() .
+                
+                $this->appModuleToastBox .
+                
+                $this->getMessages() .
+
+                $this->frame->getHtmlAppMenu();
         }
     }
 }

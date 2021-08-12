@@ -6,18 +6,18 @@
  * Object oriented, strongly typed, up to date software in modular structure for 
  * creating web applications. Designed and documented for developers.
  * 
- * Release VTS.443.211 - Open Source Package - MPL 2.0 Licensed.
+ * Release VTS.443.222 - Open Source Package - MPL 2.0 Licensed.
  * 
  * https://onurgunescomtr@bitbucket.org/onurgunescomtr/verisanat-v.4.git
  * https://github.com/onurgunescomtr/verisanat
  * 
  * @package		Verisanat v.4.4.3 "Rembrandt"
- * @subpackage  VTS.443.211 [Tr]Verisanat Tam Sürüm - [En]Verisanat Full Version 
+ * @subpackage  VTS.443.222 [Tr]Verisanat Tam Sürüm - [En]Verisanat Full Version 
  * 
  * @author		Onur Güneş  https://www.facebook.com/onur.gunes.developer
  *                          https://www.twitter.com/onurgunescomtr
  *                          mailto:verisanat@outlook.com
- *                          https://www.verisanat.com/iletisim
+ *                          https://www.verisanat.com/contact
  * 
  * @copyright	Copyright (c) 2012 - 2021 Onur Güneş
  *              https://www.verisanat.com
@@ -152,6 +152,8 @@ class Start{
 
         $this->loadRegisterModules();
 
+        $this->injectDefaultClasses();
+
         is_array($this->launchRequest->getProcess()) ? $this->runModule($this->launchRequest->getProcess()) : $this->run($this->launchRequest->getProcess());
 
         exit;
@@ -183,7 +185,7 @@ class Start{
 
                 $this->{$this->mi[$moduleName]['sinifadi'] . 'yapi'} = new $bir($this->urlPackage,$this->moduleIntegrity());
 
-                if ($this->{$this->mi[$moduleName]['sinifadi'] . 'yapi'}->benim){
+                if ($this->{$this->mi[$moduleName]['sinifadi'] . 'yapi'}->isSudoModule){
                     
                     $this->mainModule = $moduleName;
                 }
@@ -235,9 +237,9 @@ class Start{
      */
     private function runModule(array $moduleStructure): void
     {
-        call_user_func([$this->{$moduleStructure['sinifadi'] . 'yapi'},'temelYapi'],$moduleStructure['moduladi']);
+        call_user_func([$this->{$moduleStructure['sinifadi'] . 'yapi'},'moduleLaunchControl'],$moduleStructure['moduleName']);
 
-        if (method_exists(ucfirst($moduleStructure['moduladi']) . 'Yapi',$moduleStructure['id'])){
+        if (method_exists(ucfirst($moduleStructure['moduleName']) . 'Yapi',$moduleStructure['id'])){
 
             call_user_func([$this->{$moduleStructure['sinifadi'] . 'yapi'},$moduleStructure['id']]);
         }else{
@@ -249,16 +251,14 @@ class Start{
     }
 
     /**
-     * özel işlem dosyalarini yukler
-     * 
      * @method ozelislemdosyalari() 
      * @return void
      */
     private function ozelKutukDosyalari(): void
     {
-        $this->ozelislemler = glob('v4-user-executive/v-*.php');
+        $this->ozelislemler = glob('v4-yonetici/v-*.php');
 
-        session_name('VS190072000YI');
+        session_name('VS' . SUDOSESSION . 'YI');
 
         ini_set('session.cookie_lifetime',(string)SUPERTIME);
         ini_set('session.cookie_secure','1');
@@ -273,13 +273,8 @@ class Start{
         ini_set('session.use_strict_mode','1');
         ini_set('session.cache_limiter','nocache');
 
-		/* App::sudoLoad('test-struct');
-		App::sudoLoad('sudo-panel'); */
-
-		// Console - openSource sudo load
-
-        require_once 'v4-user-executive/v-tests-and-extension-structure.php';
-        require_once 'v4-user-executive/v-administration-structure.php';
+        require_once 'v4-yonetici/v-testler-ve-kontroller-yapi.php';
+        require_once 'v4-yonetici/v-yonetim-yapi.php';
     }
 
     /**
@@ -317,9 +312,6 @@ class Start{
     }
 
     /**
-     * 443 removed match because use main module and main page module can be set together.
-     * good ol if handles well
-     * 
      * useMainModule > mainPageModule -> superior
 	 * 
 	 * - if mainPageModule is set and there is no modules to load throws Uncaught Type Error (there is nothing to call).
@@ -331,7 +323,7 @@ class Start{
     {
         if ($this->useMainModule){
 
-            call_user_func([$this->{$this->mi[$this->mainModule]['sinifadi'] . 'yapi'},'temelYapi'],$this->mainModule);
+            call_user_func([$this->{$this->mi[$this->mainModule]['sinifadi'] . 'yapi'},'moduleLaunchControl'],$this->mainModule);
 
             if (method_exists(ucfirst($this->mi[$this->mainModule]['sinifadi']) . 'Yapi',$this->mi[$this->mainModule]['id'])){
 
@@ -342,7 +334,7 @@ class Start{
             }
         }elseif(is_string($this->mainPageModule)){
 
-            call_user_func([$this->{$this->mi[$this->mainPageModule]['sinifadi'] . 'yapi'},'temelYapi'],$this->mainPageModule);
+            call_user_func([$this->{$this->mi[$this->mainPageModule]['sinifadi'] . 'yapi'},'moduleLaunchControl'],$this->mainPageModule);
 
             if (method_exists(ucfirst($this->mi[$this->mainPageModule]['sinifadi']) . 'Yapi',$this->mi[$this->mainPageModule]['id'])){
 

@@ -6,18 +6,18 @@
  * Object oriented, strongly typed, up to date software in modular structure for 
  * creating web applications. Designed and documented for developers.
  * 
- * Release VTS.443.211 - Open Source Package - MPL 2.0 Licensed.
+ * Release VTS.443.222 - Open Source Package - MPL 2.0 Licensed.
  * 
  * https://onurgunescomtr@bitbucket.org/onurgunescomtr/verisanat-v.4.git
  * https://github.com/onurgunescomtr/verisanat
  * 
  * @package		Verisanat v.4.4.3 "Rembrandt"
- * @subpackage  VTS.443.211 [Tr]Verisanat Tam Sürüm - [En]Verisanat Full Version 
+ * @subpackage  VTS.443.222 [Tr]Verisanat Tam Sürüm - [En]Verisanat Full Version 
  * 
  * @author		Onur Güneş  https://www.facebook.com/onur.gunes.developer
  *                          https://www.twitter.com/onurgunescomtr
  *                          mailto:verisanat@outlook.com
- *                          https://www.verisanat.com/iletisim
+ *                          https://www.verisanat.com/contact
  * 
  * @copyright	Copyright (c) 2012 - 2021 Onur Güneş
  *              https://www.verisanat.com
@@ -64,11 +64,23 @@ final class AppAudit{
      * @var array $appAuditInformation
      */
     private const appAuditInformation = [
-        'banned' => '200.061.IP address is banned for this API.',
-        'silent' => '200.062.IP address is muted.',
-        'unnecessary' => '200.063.Session based unnecessary process detected.',
-        'fragile' => '200.064.Request is out of operation limits. Session closed.',
-        'form' => '200.065.Please fill the form completely and as indicated.'
+
+		'TR' => [
+			'banned' => '200.061.IP address is banned for this API.',
+			'silent' => '200.062.IP address is muted.',
+			'unnecessary' => '200.063.Session based unnecessary process detected.',
+			'fragile' => '200.064.Request is out of operation limits. Session closed.',
+			'form' => '200.065.Please fill the form completely and as indicated.',
+			'google_api_off' => '<div class="d-none">Google API kullanım dışıdır.</div>'
+		],
+		'EN' => [
+			'banned' => '200.061.IP address is banned for this API.',
+			'silent' => '200.062.IP address is muted.',
+			'unnecessary' => '200.063.Session based unnecessary process detected.',
+			'fragile' => '200.064.Request is out of operation limits. Session closed.',
+			'form' => '200.065.Please fill the form completely and as indicated.',
+			'google_api_off' => '<div class="d-none">Google API is disabled for this app.</div>'
+		]
     ];
 
     /**
@@ -149,7 +161,7 @@ final class AppAudit{
 
         session_destroy();
 
-        die(self::appAuditInformation['banned']);
+        die(self::appAuditInformation[LANG]['banned']);
     }
 
     /**
@@ -172,7 +184,7 @@ final class AppAudit{
 
         session_destroy();
 
-        die(self::appAuditInformation['silent']);
+        die(self::appAuditInformation[LANG]['silent']);
     }
 
     /**
@@ -214,7 +226,7 @@ final class AppAudit{
 
         if ($_SESSION['i_am_insistent'] > 20){
 
-            die(self::appAuditInformation['unnecessary']);
+            die(self::appAuditInformation[LANG]['unnecessary']);
         }
     }
 
@@ -243,7 +255,7 @@ final class AppAudit{
 
             session_destroy();
 
-            die(self::appAuditInformation['fragile']);
+            die(self::appAuditInformation[LANG]['fragile']);
         }
     }
 
@@ -259,7 +271,7 @@ final class AppAudit{
 
             if (empty($_POST[$t]) || $_POST[$t] === null){
 
-                $bunu === null ? Http::inform('warn',self::appAuditInformation['form']) : Http::inform('warn',$bunu);
+                $bunu === null ? Http::inform('warn',self::appAuditInformation[LANG]['form']) : Http::inform('warn',$bunu);
 
 				return false;
             }
@@ -277,7 +289,7 @@ final class AppAudit{
      */
     public static function googleCaptCheck(): bool
     {
-        if (isset($_POST['g-recaptcha-response'])){
+        if (isset($_POST['g-recaptcha-response']) && App::getApp('googleIsOn')){
             
             $googlekeyreturn = Http::__px('g-recaptcha-response');
             
@@ -307,7 +319,7 @@ final class AppAudit{
      */
     public static function googleCaptSpecialCheck(string $ozelFormDegeri,string $ozelFormHedefi): bool
     {
-        if (isset($_POST[$ozelFormDegeri])){
+        if (isset($_POST[$ozelFormDegeri]) && App::getApp('googleIsOn')){
             
             $googlekeyreturn = Http::__px($ozelFormDegeri);
             
@@ -340,7 +352,13 @@ final class AppAudit{
     {
         $gc = '<script src="https://www.google.com/recaptcha/api.js?render=%s"></script> <script> grecaptcha.ready(function() { grecaptcha.execute("%s", {action: "%s"}).then(function(token) { document.getElementById("%s").value = token; }); }); </script>';
 
-        return sprintf($gc,App::getProvider('googleReCAPTSite'),App::getProvider('googleReCAPTSite'),$actionName,$formElemId);
+		if (App::getApp('googleIsOn')){
+
+			return sprintf($gc,App::getProvider('googleReCAPTSite'),App::getProvider('googleReCAPTSite'),$actionName,$formElemId);
+		}else{
+
+			return self::appAuditInformation[LANG]['google_api_off'];
+		}
     }
 
     /**
@@ -351,11 +369,9 @@ final class AppAudit{
      */
     public static function userSessionCheck(): bool
     {
-        $syok = false;
+        if (isset($_SESSION['account_page_number'])){
 
-        if (isset($_SESSION['hesapno'])){
-
-            $syok = false;
+            return false;
         }else{
 
             $cookie = new \Delight\Cookie\Cookie(UCOOKIE);
@@ -378,10 +394,8 @@ final class AppAudit{
 
             session_destroy();
 
-            $syok = true;
+            return true;
         }
-
-        return $syok;
     }
 
     /**
@@ -425,7 +439,7 @@ final class AppAudit{
      */
     public static function getUserPageNumber(): mixed
     {
-        return $_SESSION['hesapno'] ?? null;
+        return $_SESSION['account_page_number'] ?? null;
     }
 
     /**
@@ -443,9 +457,7 @@ final class AppAudit{
      */
     public static function checkOpenKey(string $gelen): bool
     {
-        $erisim = $_SESSION['public_key'] === $gelen ? true : false;
-
-        return $erisim;
+        return $_SESSION['public_key'] === $gelen ? true : false;
     }
 
     /**

@@ -6,18 +6,18 @@
  * Object oriented, strongly typed, up to date software in modular structure for 
  * creating web applications. Designed and documented for developers.
  * 
- * Release VTS.443.211 - Open Source Package - MPL 2.0 Licensed.
+ * Release VTS.443.222 - Open Source Package - MPL 2.0 Licensed.
  * 
  * https://onurgunescomtr@bitbucket.org/onurgunescomtr/verisanat-v.4.git
  * https://github.com/onurgunescomtr/verisanat
  * 
  * @package		Verisanat v.4.4.3 "Rembrandt"
- * @subpackage  VTS.443.211 [Tr]Verisanat Tam Sürüm - [En]Verisanat Full Version 
+ * @subpackage  VTS.443.222 [Tr]Verisanat Tam Sürüm - [En]Verisanat Full Version 
  * 
  * @author		Onur Güneş  https://www.facebook.com/onur.gunes.developer
  *                          https://www.twitter.com/onurgunescomtr
  *                          mailto:verisanat@outlook.com
- *                          https://www.verisanat.com/iletisim
+ *                          https://www.verisanat.com/contact
  * 
  * @copyright	Copyright (c) 2012 - 2021 Onur Güneş
  *              https://www.verisanat.com
@@ -105,6 +105,8 @@ final class ContactUs{
                     
                     Http::report(),
 
+                    App::getApp('contactUri'),
+
                     $this->frame->translate('writetous'),
 
                     $this->frame->translate('namesurname'),
@@ -121,6 +123,12 @@ final class ContactUs{
                 
                     $this->vui->getFacebookLogin(),
 
+                    $this->frame->translate('contact_acceptance'),
+
+                    $this->frame->translateUri('terms-and-conditions'), $this->frame->translate('term_conditions'),
+
+                    $this->frame->translateUri('privacy-policy'), $this->frame->translate('privacy_policy'),
+
                     AppAudit::getGoogleCaptSpecial('g-recaptcha-response','iletisimsayfasi')
                 );
                 
@@ -128,7 +136,7 @@ final class ContactUs{
 
         endswitch;
 
-        $this->rawScreen .= $this->vui->endHtmlPage();
+        $this->rawScreen .= $this->endHtmlPage();
     }
 
     /**
@@ -152,7 +160,7 @@ final class ContactUs{
 
             if (!AppAudit::formVarCheck($this->contactFormVars,self::infoContactUs[LANG]['form_bos'])){
 
-                Http::dispatch(ADDRESS . '/' . 'iletisim');
+                Http::dispatch(ADDRESS . '/' . App::getApp('contactUri'));
             }
             
             if (AppAudit::googleCaptSpecialCheck('g-recaptcha-response','iletisimsayfasi')){
@@ -160,7 +168,7 @@ final class ContactUs{
                 $this->iletisimKaydiAl();
             }else{
 
-                Http::guide(ADDRESS . '/' . 'iletisim','error',self::infoContactUs[LANG]['google']);
+                Http::guide(ADDRESS . '/' . App::getApp('contactUri'),'error',self::infoContactUs[LANG]['google']);
             }
         }
     }
@@ -190,10 +198,10 @@ final class ContactUs{
 
             Scribe::appLog('iletişim formu yazılamadı.' . $h->getMessage());
 
-            Http::guide(ADDRESS,'bilgi',self::infoContactUs[LANG]['yazilmadi']);
+            Http::guide(ADDRESS,'warn',self::infoContactUs[LANG]['yazilmadi']);
         }
 
-        Http::guide(ADDRESS . '/iletisim','bilgi',self::infoContactUs[LANG]['yazildi']);
+        Http::guide(ADDRESS . '/' . App::getApp('contactUri'),'warn',self::infoContactUs[LANG]['yazildi']);
     }
 }
 ?>
