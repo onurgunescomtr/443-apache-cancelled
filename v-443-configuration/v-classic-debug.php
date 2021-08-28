@@ -54,7 +54,7 @@ class Debug{
     {
         echo '<br>..............................................................<br><pre>Dump from VTS\Debug: ';
 
-        var_dump($what);
+        'Type: ' . gettype($what) . ' Called from: ' . get_called_class() . ' Dump: ' . var_dump($what);
 
         echo '</pre><br>..............................................................<br>';
     }

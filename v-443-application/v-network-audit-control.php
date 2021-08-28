@@ -41,9 +41,8 @@ use VTS\Http;
 use VTS\PathWays;
 
 \VTS\Version\VersionCheck::dkontrol(__FILE__,'4.4.2');
-/**
- * NetControl - AgKontrol
- */
+
+
 final class NetControl extends Http{
 
     use Builder;
@@ -174,10 +173,6 @@ final class NetControl extends Http{
     }
 
     /**
-     * loads ip addresses and ip address ranges from json files (yeah... each fucking time when using v.Tam apache package... read PHP file cache for FPM, cmon people!)
-     * 
-     * gerekli kontrol dosyalarını yükler
-     * 
      * @method loadRegistry() 
      */
     private function loadRegistry(): void
@@ -188,7 +183,7 @@ final class NetControl extends Http{
     }
 
     /**
-     * @method yaz() $turune gore gerekli json dosyasını oluşturur
+     * @method yaz()
      * @param string $turu - blok-ip
      */
     public static function yaz($turu = null,$icerik = null){
@@ -222,8 +217,6 @@ final class NetControl extends Http{
     }
 
     /**
-     * Gerekli kontrolleri yapar
-     * 
      * @method diagnose()
      * @return void
      */
@@ -384,41 +377,6 @@ final class NetControl extends Http{
         $this->subject['istekzamani'] = $_SERVER['REQUEST_TIME'];
         $this->subject['sorgu'] = $_SERVER['QUERY_STRING'] ?? null;
         $this->subject['browser'] = $_SERVER['HTTP_USER_AGENT'] ?? null;
-    }
-
-    public function testBir(): array
-    {
-        foreach($this->iparaliklari as $t){
-
-            foreach($t['ipler'] as $k){
-
-                $i[] = $k;
-            }
-        }
-
-        return $i;
-    }
-
-    public function testIki(string $adres): void
-    {
-        \VTS\Debug::see($this->subject['ip']);
-
-        if (isset($this->iparaliklari)){
-
-            foreach($this->iparaliklari as $t){
-
-                foreach($t['ipler'] as $k){
-
-                    $k = explode(',',$k);
-
-                    if (ip2long($k[0]) <= ip2long($adres) && ip2long($k[1]) >= ip2long($adres)){
-
-                        \VTS\Scribe::gateLog('bloklu'); die('IP adres blogu engellenmiştir.');
-
-                    }
-                }
-            }
-        }
     }
 }
 ?>

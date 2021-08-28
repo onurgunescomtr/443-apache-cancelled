@@ -35,9 +35,7 @@
 */
 
 namespace VTS;
-/**
- * App - UygulamaAyarlari
- */
+
 class App{
 
     /**
@@ -65,14 +63,6 @@ class App{
      * @var string $appConfDirectory
      */
     private const appConfDirectory = 'application' . '/' . 'app-config';
-    /**
-     * @var bool $surumAcilGuncelle
-     */
-    private bool $surumAcilGuncelle;
-    /**
-     * @var string $surumEtkiTipi
-     */
-    private string $surumEtkiTipi;
     /**
      * @var array $infoAppConfig
      */
@@ -104,6 +94,7 @@ class App{
         'staticMenu',
         'invalidRequestResponse',
         'applicationUsersEnabled',
+        'accOperationUri',
         'languageOption',
         'POSpaymentProcessor',
         'mailSenderName',
@@ -145,9 +136,24 @@ class App{
      * @var array $internalLoad
      */
     private const internalLoad = [
-        'internal-apps',
-        'internal-extensions',
-        'internal-classics'
+        'classics',
+        'integrations'
+    ];
+    /**
+     * @var array $onDemandLoad
+     */
+    private const onDemandLoad = [
+        'stripe',
+        'paypal',
+        'skrill',
+        'payoneer',
+        'iyzico',
+        'payu',
+        'ipara',
+        'paytr',
+        'trendyol',
+        'hepsibuarada',
+        'n11',
     ];
     /**
      * @var array $microApps
@@ -170,6 +176,13 @@ class App{
         ]
     ];
     /**
+     * @var array $sudoApps
+     */
+    protected const sudoApps = [
+        'tests-and-extension',
+        'administration'
+    ];
+    /**
      * where app provider properties such as Google and Facebook properties resides
      * 
      * @var array $proProp
@@ -182,7 +195,7 @@ class App{
      */
     protected static array $appProp;
     /**
-     * where application module properties resides such as they are available or list of them (as array)
+     * where application module properties resides
      * 
      * @var array $moduleProp
      */
@@ -325,7 +338,7 @@ class App{
      */
     private static function loadAppTraits(\VTS\System\Dos $dos): void
     {
-        $o = $dos->cd(RELEASE . '-application/v4-traits')->dir('v-traits-*.php');
+        $o = $dos->cd(RELEASE . '-application' . '/' . FREL . '-traits')->dir('v-traits-*.php');
 
         foreach($o as $t){
 
@@ -442,7 +455,7 @@ class App{
     {
         foreach(self::internalLoad as $f){
 
-            $d = $dos->cd(RELEASE . '-application' . '/' . substr(RELEASE,0,1) . substr(RELEASE,3,1) . '-' . $f)->dir('v-*.php');
+            $d = $dos->cd(RELEASE . '-application' . '/' . FREL . '-' . $f)->dir('v-*.php');
 
             foreach($d as $t){
 
@@ -452,25 +465,51 @@ class App{
     }
 
     /**
-     * @method microLoad()
-     * @param string $cesit
+     * @method autoLoad()
+     * @param string $extName
      * @return void
      */
-    public static function microLoad(string $cesit): void
+    public static function autoLoad(string $extName): void
     {
-        foreach(self::microApps[$cesit]['interface'] as $t){
+        if (in_array($extName,self::onDemandLoad,true)){
+
+            require_once BASE . '/' . RELEASE . '-application' . '/' . FREL . '-extensions' . '/' . 'v-' . $extName . '-extension' . '.php';
+        }
+    }
+
+    /**
+     * @method microLoad()
+     * @param string $extName
+     * @return void
+     */
+    public static function microLoad(string $extName): void
+    {
+        foreach(self::microApps[$extName]['interface'] as $t){
         
-            require_once BASE . '/' . RELEASE . '-application' . '/' . 'interfaces' . '/' . 'v-interface-' . $t . '.php';
+            require_once BASE . '/' . RELEASE . '-application' . '/' . FREL . '-' . 'interfaces' . '/' . 'v-interface-' . $t . '.php';
         }
 
-        foreach(self::microApps[$cesit]['traits'] as $t){
+        foreach(self::microApps[$extName]['traits'] as $t){
 
-            require_once BASE . '/' . RELEASE . '-application' . '/' . substr(RELEASE,0,1) . substr(RELEASE,3,1) . '-' . $cesit . '/' . 'v-traits-' . $cesit . '-' . $t . '.php';
+            require_once BASE . '/' . RELEASE . '-application' . '/' . FREL . '-' . $extName . '/' . 'v-traits-' . $extName . '-' . $t . '.php';
         }
 
-        foreach(self::microApps[$cesit]['files'] as $t){
+        foreach(self::microApps[$extName]['files'] as $t){
 
-            require_once BASE . '/' . RELEASE . '-application' . '/' . substr(RELEASE,0,1) . substr(RELEASE,3,1) . '-' . $cesit . '/' . 'v-' . $t . '.php';
+            require_once BASE . '/' . RELEASE . '-application' . '/' . FREL . '-' . $extName . '/' . 'v-' . $t . '.php';
+        }
+    }
+
+    /**
+     * @method sudoLoad()
+     * @param string $sName
+     * @return void
+     */
+    public static function sudoLoad(): void
+    {
+        foreach(self::sudoApps as $t){
+
+            require_once BASE . '/' . RELEASE . '-application' . '/' . FREL . '-' . 'user_executive' . '/' . 'v-' . $t . '-structure.php';
         }
     }
 

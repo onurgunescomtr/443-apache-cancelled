@@ -174,20 +174,16 @@ class PathWays{
     }
 
     /**
-     * v.4.4.2
-     * 
      * @method createQuery()
      * @return void
      */
     private function createQuery(): void
     {
-        $sorgu = $this->eraseFBClidStuff($this->segment('query'));
+        $secondDegreeQuery = $this->eraseExternalTracker($this->segment('query'));
 
-        $sorgu = $this->eraseUtmStuff($sorgu);
-
-        if (is_string($sorgu)){
+        if (is_string($secondDegreeQuery)){
             
-            $this->rawQuery = $this->urlCleanser(urldecode(implode('&',explode('%26amp%3B',AppAudit::uriHopper($sorgu)))));
+            $this->rawQuery = $this->urlCleanser(urldecode(implode('&',explode('%26amp%3B',$this->uriHopper($secondDegreeQuery)))));
 
             parse_str($this->rawQuery,$this->listQuery);
 
@@ -201,7 +197,7 @@ class PathWays{
                     die(self::infoPathWays['limit_fail']);
                 }
             
-                $this->refinedQuery[self::figures[$s]] =  $al; // $this->refinedQuery['first']
+                $this->refinedQuery[self::figures[$s]] =  $al;
             
                 $s++;
             }
@@ -214,17 +210,40 @@ class PathWays{
     }
 
     /**
-     * v.4.4.2.73
-     * 
-     * @method eraseFBClidStuff()
+     * @method uriHopper() 
+     * @param string $part
+     * @return null|string $p
+     */
+    private function uriHopper(string $part = null): null|string
+    {
+        if (isset($part)){
+        
+            $part = trim($part);
+            
+            $part = urlencode($part);
+            
+            $ridOff = array(';','%26%2359');
+            
+            $change = [
+                null
+            ];
+            
+            return str_replace($ridOff,$change,$part);
+        }
+
+        return null;
+    }
+
+    /**
+     * @method eraseExternalTracker()
      * @param string|null $rawQuery
      * @return string|null
      */
-    private function eraseFBClidStuff(?string $rawQuery = null): string|null
+    private function eraseExternalTracker(?string $rawQuery = null): string|null
     {
         if (isset($rawQuery)){
 
-            if (str_contains($rawQuery,'fbclid')){
+            if (str_contains($rawQuery,'fbclid') || str_contains($rawQuery,'utm_')){
 
                 $rawQuery = null;
             }
@@ -234,33 +253,8 @@ class PathWays{
     }
 
     /**
-     * v.4.4.2.77
-     * 
-     * @method eraseUtmStuff()
-     * @param string|null $rawQuery
-     * @return string|null
-     */
-    private function eraseUtmStuff(?string $rawQuery): string|null
-    {
-        if (isset($rawQuery)){
-
-            if (str_contains($rawQuery,'utm_source') || str_contains($rawQuery,'utm_')){
-
-                $rawQuery = null;
-            }
-        }
-
-        return $rawQuery;
-    }
-
-    /**
-     * 443 private function as construct return
-     * v.4.4.2
-     * 
-     * $urlpaketi ni oluşturup döndürür
-     * 
-     * @method aktar() 
-     * @return array $urlPaketi
+     * @method transfer() 
+     * @return array
      */
     public function transfer(): array
     {

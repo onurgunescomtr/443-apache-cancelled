@@ -65,7 +65,8 @@ final class System{
         'v-classic-setup.php',
         'v-classic-version.php',
         'v-classic-exception.php',
-        'v-classic-app.php'
+        'v-classic-app.php',
+        'v-classic-system-session.php'
     ];
 
     /**

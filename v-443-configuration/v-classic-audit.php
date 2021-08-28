@@ -156,7 +156,7 @@ class Audit{
     }
 
     /**
-     * v4 preg author -> github/jaywilliams http://gist.github.com/119517
+     * preg author -> github/jaywilliams http://gist.github.com/119517
      * Classic http unnecessary thingies cleaner
      * 
      * @method fairHtml()
@@ -177,8 +177,6 @@ class Audit{
     }
 
     /**
-     * 443 its nice to have a seperate function for this. should be inside ClassicString i am not sure.
-     * 
      * @method fairString()
      * @param string $w
      * @return string
@@ -193,8 +191,6 @@ class Audit{
     }
 
     /**
-     * Classic text to uri part converter
-     * 
      * @method makeUri()
      * @param string $text
      * @return string

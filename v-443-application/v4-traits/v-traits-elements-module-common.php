@@ -175,7 +175,7 @@ trait CommonModuleElements{
     private string $htmlModuleAppReportWarn = '
         <div class="sticky-top uyarilar text-center alert alert-success alert-dismissible fade show" role="alert">
             <strong>%s : </strong> %s
-            <button type="button" class="close" data-dismiss="alert">
+            <button type="button" class="close" data-bs-dismiss="alert">
                 <span>
                     <i class="bi bi-x-circle"></i>
                 </span>
@@ -188,9 +188,9 @@ trait CommonModuleElements{
     private string $htmlModuleAppReportError = '
         <div class="sticky-top uyarilar text-center alert alert-warning alert-dismissible fade show" role="alert">
             <strong>%s : </strong> %s
-            <button type="button" class="close" data-dismiss="alert">
+            <button type="button" class="close" data-bs-dismiss="alert">
                 <span>
-                    <i class="far fa-times-circle mobil-mt-1"></i>
+                    <i class="bi bi-x-circle"></i>
                 </span>
             </button>
         </div>

@@ -125,14 +125,14 @@ class Scribe{
     {
         switch(true):
 
-            case isset($_SESSION['client_address']) && filter_var($_SESSION['client_address'],FILTER_VALIDATE_IP):
+            case SysLed::get('user_client_address'):
 
-                $this->systemLevel = 'module-layer';
+                $this->systemLevel = 'app-layer';
 
             break;
             default:
 
-                $this->systemLevel = 'application-layer';
+                $this->systemLevel = 'system-layer';
 
             break;
         endswitch;
@@ -182,31 +182,34 @@ class Scribe{
      */
     public static function requestLog(?string $is = null,?string $ekis = null,?string $sor = null): void
     {
-        $yaz = \Model::factory('VsLogsistekler')->create();
+        if (!VSDEVMODE){
 
-        $yaz->tarihsaat = date('d-m-Y H:i:s');
+            $yaz = \Model::factory('VsLogsistekler')->create();
 
-        $yaz->tanim = 'Request';
+            $yaz->tarihsaat = date('d-m-Y H:i:s');
 
-        $yaz->hesapno = AppAudit::getUserPageNumber();
+            $yaz->tanim = 'Request';
 
-        $yaz->ip = $_SESSION['client_address'];
+            $yaz->hesapno = SysLed::get('user_page_idstring');
 
-        $yaz->raporseviyesi = 8;
+            $yaz->ip = SysLed::get('user_client_address');
 
-        $yaz->onemderecesi = 8;
+            $yaz->raporseviyesi = 8;
 
-        $yaz->islem = $is;
+            $yaz->onemderecesi = 8;
 
-        $yaz->ekislem = $ekis;
+            $yaz->islem = $is;
 
-        $yaz->sorgu = $sor;
+            $yaz->ekislem = $ekis;
 
-        $yaz->yonlendiren = $_SERVER['HTTP_REFERER'] ?? null;
+            $yaz->sorgu = $sor;
 
-        $yaz->useragent = $_SERVER['HTTP_USER_AGENT'] ?? 'not-available';
+            $yaz->yonlendiren = $_SERVER['HTTP_REFERER'] ?? null;
 
-        $yaz->save();
+            $yaz->useragent = $_SERVER['HTTP_USER_AGENT'] ?? 'not-available';
+
+            $yaz->save();
+        }
     }
 
     /**
@@ -264,7 +267,7 @@ class Scribe{
 
         $yaz->hesapno = $hno;
 
-        $yaz->ip = $_SESSION['client_address'];
+        $yaz->ip = SysLed::get('user_client_address');
 
         $yaz->raporseviyesi = $rseviye;
 

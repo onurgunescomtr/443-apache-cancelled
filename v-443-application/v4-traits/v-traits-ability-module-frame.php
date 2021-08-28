@@ -74,7 +74,7 @@ trait AbilityModuleFrame{
         
         return array(
             'no' => $this->sn->modelno,
-            'baslik' => $ogeAdi,
+            'title' => $ogeAdi,
             'tanim' => $ogeTanim,
             'satis_durumu' => $durum,
             'stok' => $this->sn->toplamadet,
@@ -137,24 +137,17 @@ trait AbilityModuleFrame{
     }
 
     /**
-     * $headekleyi oluşturur. tamamlanmış head e eklenecek string döndürür
-     * 
-     * @method headEklentileri()
-     * @return mixed|string|null $headekle
+     * @method setModuleHeadAdditions()
+     * @return string|null $headekle
      */
-    private function headEklentileri()
+    private function setModuleHeadAdditions(): string|null
     {
-        $this->headekle = null;
-
         if (isset($this->frameAdditions)){
 
-            foreach($this->frameAdditions as $t){
-
-                $this->headekle .= $t;
-            }
+            return ClassicString::getConsec($this->frameAdditions);
         }
 
-        return $this->headekle;
+        return null;
     }
 
     /**

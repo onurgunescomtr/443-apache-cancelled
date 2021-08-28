@@ -92,24 +92,38 @@ trait AbilityModulePage{
      */
     public function setAppModuleReport(): void
     {
-        if (isset($_SESSION['warning_type'])){
+        $rType = SysLed::get('http_warning_type',true);
 
-            $this->reportType = $_SESSION['warning_type'];
+        if (is_string($rType)){
+
+            $this->reportType = $rType;
+
+            $this->reportInfo = SysLed::get('http_guide_information',true);
+
+            $this->appModuleReport = $this->reportType === 'warn' ? 
             
-            unset($_SESSION['warning_type']);
+                sprintf($this->htmlModuleAppReportWarn,
 
-            $this->reportInfo = $_SESSION['guide_information'];
-            
-            unset($_SESSION['guide_information']);
-
-            $this->appModuleReport = $this->reportType === 'warn' ? sprintf($this->htmlModuleAppReportWarn,$this->frame->translate('warning_report'),$this->reportInfo) : sprintf($this->htmlModuleAppReportError,$this->frame->translate('error_report'),$this->reportInfo);
+                    $this->frame->translate('warning_report'),
+                    
+                    $this->reportInfo
+                    
+                ) : sprintf($this->htmlModuleAppReportError,
+                    
+                    $this->frame->translate('error_report'),
+                    
+                    $this->reportInfo
+            );
 
             Http::forward($this->appModuleReport);
         }
 
-        $this->appModuleToastBox = $_SESSION['appModuleToastBox'] ?? null;
-        
-        unset($_SESSION['appModuleToastBox']);
+        $appToast = SysLed::get('app_module_toast_container',true);
+
+        if (is_string($appToast)){
+
+            $this->appModuleToastBox = $appToast ?? null;
+        }
     }
 
     /**
@@ -121,27 +135,27 @@ trait AbilityModulePage{
      * @param string $moduleName
      * @return void
      */
-    public function setModuleToast(string $information,string $moduleName = null): void
+    public function setModuleToast(string $information): void
     {
-        if (isset($_SESSION['appModuleToastBox'])){
+        $toastBox = SysLed::get('app_module_toast_container');
 
-            $_SESSION['appModuleToastBox'] .= isset($moduleName) ? sprintf($this->htmlModuleToast,' - ' . $moduleName,$information) : sprintf($this->htmlModuleToast,null,$information);
+        if (is_string($toastBox)){
+
+            SysLed::modify('app_module_toast_container',sprintf($this->htmlModuleToast,' - ' . $this->moduleName,$information),'join');
         }else{
 
-            $_SESSION['appModuleToastBox'] = isset($moduleName) ? sprintf($this->htmlModuleToast,' - ' . $moduleName,$information) : sprintf($this->htmlModuleToast,null,$information);
+            SysLed::set('app_module_toast_container',sprintf($this->htmlModuleToast,' - ' . $this->moduleName,$information));
         }
     }
 
     /**
-     * oluşturulan sayfayı html olarak kaydeder.
-     * 
-     * @method ekranihtmlkaydet()
-     * @param string $v oluşturulacak html dosya adı - onbellek1.html
+     * @method createCachedPage()
+     * @param string $v
 	 * @return bool
      */
-    private function onbellekolustur(string $v = null): void
+    private function createCachedPage(string $v): void
     {
-        // console - 443 openSource removed
+        // console - OS removed
     }
 
     /**

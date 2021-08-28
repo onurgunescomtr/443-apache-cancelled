@@ -63,7 +63,7 @@ trait Screen{
      */
     public function startHtmlPage(): string
     {
-        return $this->frame->getHtmlHead() . $this->vui->startHtmlBody('verisanat-html-doc','433') . $this->frame->getHtmlAppMenu();
+        return $this->frame->getHtmlHead() . $this->vui->startHtmlBody('verisanat-html-doc','433') . $this->frame->getHtmlAppMenu() . Http::report();
     }
 
     /**

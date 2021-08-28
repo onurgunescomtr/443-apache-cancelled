@@ -154,6 +154,8 @@ class Start{
 
         $this->injectDefaultClasses();
 
+        SysLed::load($this->launchRequest->getSessionType());
+
         is_array($this->launchRequest->getProcess()) ? $this->runModule($this->launchRequest->getProcess()) : $this->run($this->launchRequest->getProcess());
 
         exit;
@@ -258,20 +260,7 @@ class Start{
     {
         $this->ozelislemler = glob('v4-yonetici/v-*.php');
 
-        session_name('VS' . SUDOSESSION . 'YI');
-
-        ini_set('session.cookie_lifetime',(string)SUPERTIME);
-        ini_set('session.cookie_secure','1');
-        ini_set('session.cookie_httponly','1');
-        ini_set('session.use_only_cookies','1');
-        ini_set('session.gc_maxlifetime',(string)SUPERTIME);
-        ini_set('session.cookie_samesite','Strict');
-        ini_set('session.hash_function','sha256');
-        ini_set('session.sid_bits_per_character','6');
-        ini_set('session.sid_lenght','128');
-        ini_set('session.use_trans_sid','0');
-        ini_set('session.use_strict_mode','1');
-        ini_set('session.cache_limiter','nocache');
+        
 
         require_once 'v4-yonetici/v-testler-ve-kontroller-yapi.php';
         require_once 'v4-yonetici/v-yonetim-yapi.php';
@@ -357,8 +346,8 @@ class Start{
      */
     private function specialOperation(): void
     {
-        $this->ozelKutukDosyalari();
-
+        App::sudoLoad();
+        
         $icyapiozelsinif = $this->scope . $this->superStructureClasses[substr($this->launchKey,13)];
 
         $this->internalAppSudo = new $icyapiozelsinif($this->urlPackage,Audit::dateTime(),$this->teskon,$this->modulesLoaded);

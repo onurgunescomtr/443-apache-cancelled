@@ -59,15 +59,11 @@ final class Dos{
      */
     private bool $debugMode = false;
     /**
-     * @var string $icYapiKlasorTipi
+     * @var array $relFolderStructure
      */
-    private string $icYapiKlasorTipi = 'v4';
-    /**
-     * @var array $klasorYapisiHazir
-     */
-    private array $klasorYapisiHazir = [
-        'yapilandir',
-        'yonet',
+    private array $relFolderStructure = [
+        'config',
+        'ap',
         'user',
         'classic',
         'ftemp'
@@ -109,9 +105,9 @@ final class Dos{
         'image/jpeg' => 'jpeg'
     ];
     /**
-     * @var string $kayittipi
+     * @var string $logRecordSummary
      */
-    private $kayittipi;
+    private $logRecordSummary;
     /**
      * işlem sonucu barındırır. hata durumu false, hatasız true.
      * 
@@ -119,9 +115,7 @@ final class Dos{
      */
     private bool $hata = false;
     /**
-     * dosya uzantisi
-     * 
-     * @var string $uzanti 
+     * @var string $extension 
      */
     private string $extension;
     /**
@@ -137,14 +131,10 @@ final class Dos{
      */
     private array $dosyaDizi;
     /**
-     * aktif kullanılan klasor  - cd(klasor)
-     * 
      * @var string $activeFolderName
      */
     private string $activeFolderName;
     /**
-     * aktif dosya içeriği
-     * 
      * @var string $activeFileData
      */
     private string|null $activeFileData;
@@ -469,14 +459,12 @@ final class Dos{
     }
 
     /**
-     * ilgili klasoru siler
-     * 
      * @method deleteFolder 
      * @return Dos
      */
     public function deleteFolder(): Dos
     {
-        $this->kayittipi = 'Folder - DOS - ' . $this->activeFolderName;
+        $this->logRecordSummary = 'Folder - DOS - ' . $this->activeFolderName;
 
         try{
 
@@ -487,7 +475,7 @@ final class Dos{
         }
         catch(\Exception $hata){
 
-            \VTS\Scribe::appLog($this->kayittipi . ' : ' . $hata->getMessage());
+            \VTS\Scribe::appLog($this->logRecordSummary . ' : ' . $hata->getMessage());
 
             $this->hata = true;
         }
@@ -496,14 +484,12 @@ final class Dos{
     }
 
     /**
-     * ilgili dosyayı siler
-     * 
      * @method deleteFile 
      * @return void
      */
     public function deleteFile(): void
     {
-        $this->kayittipi = 'File - DOS - ' . $this->activeFileName;
+        $this->logRecordSummary = 'File - DOS - ' . $this->activeFileName;
 
         try{
 
@@ -514,7 +500,7 @@ final class Dos{
         }
         catch(\Exception $hata){
 
-            \VTS\Scribe::appLog($this->kayittipi . ' : ' . $hata->getMessage());
+            \VTS\Scribe::appLog($this->logRecordSummary . ' : ' . $hata->getMessage());
 
             $this->hata = true;
         }
@@ -912,7 +898,7 @@ final class Dos{
      */
     private function hazirYonet(): Dos
     {
-        $this->cd(RELEASE . '-application' . '/' . $this->icYapiKlasorTipi . '-yonetici');
+        $this->cd(RELEASE . '-application' . '/' . FREL . '-user_executive');
 
         return $this;
     }
@@ -923,7 +909,7 @@ final class Dos{
      */
     private function hazirKullanici(): Dos
     {
-        $this->cd(RELEASE . '-application' . '/' . $this->icYapiKlasorTipi . '-user');
+        $this->cd(RELEASE . '-application' . '/' . FREL . '-user');
 
         return $this;
     }
@@ -934,7 +920,7 @@ final class Dos{
      */
     private function hazirKlasik(): Dos
     {
-        $this->cd(RELEASE . '-application' . '/' . $this->icYapiKlasorTipi . '-internal-classics');
+        $this->cd(RELEASE . '-application' . '/' . FREL . '-classics');
 
         return $this;
     }
@@ -944,13 +930,11 @@ final class Dos{
      */
     public function __construct(?string $kl = null)
     {
-        $this->icYapiKlasorTipi = substr(RELEASE,0,1) . substr(RELEASE,3,1);
-
-        if (!is_null($kl) && in_array($kl,$this->klasorYapisiHazir)){
+        if (!is_null($kl) && in_array($kl,$this->relFolderStructure)){
 
             match($kl){
-                'yapilandir' => $this->hazirYapilandir(),
-                'yonet' => $this->hazirYonet(),
+                'config' => $this->hazirYapilandir(),
+                'ap' => $this->hazirYonet(),
                 'user' => $this->hazirKullanici(),
                 'classic' => $this->hazirKlasik(),
                 'ftemp' => $this->hazirSablon()

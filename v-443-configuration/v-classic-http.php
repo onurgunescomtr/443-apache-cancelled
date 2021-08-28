@@ -62,14 +62,14 @@ class Http{
         'htmlResponseBox' => '
             <div class="sticky-top uyarilar text-center alert alert-success alert-dismissible fade show" role="alert">
                 <strong>%s : </strong> %s
-                <button type="button" class="close" data-dismiss="alert">
+                <button type="button" class="close" data-bs-dismiss="alert">
                     <i class="bi bi-x-circle"></i></span>
                 </button>
             </div>',
         'htmlResponseBoxFail' => 
             '<div class="sticky-top uyarilar text-center alert alert-danger alert-dismissible fade show" role="alert">
                 <strong>%s : </strong> %s
-                <button type="button" class="close" data-dismiss="alert">
+                <button type="button" class="close" data-bs-dismiss="alert">
                     <i class="bi bi-x-circle"></i></span>
                 </button>
             </div>'
@@ -88,19 +88,17 @@ class Http{
         ]
     ];
     /**
-     * Classic user redirection with heads up
-     * 
      * @method guide()
      * @param string $where
-     * @param string $type - warn / error | bilgi / hata
+     * @param string $type
      * @param string $message
      * @return void
      */
     public static function guide(string $where,string $type = 'error',string $message = null): void
     {
-        $_SESSION['warning_type'] = $type;
+        SysLed::set('http_warning_type',$type);
 
-        $_SESSION['guide_information'] = $message;
+        SysLed::set('http_guide_information',$message);
 
         header('Location: ' . $where);
 
@@ -108,8 +106,6 @@ class Http{
     }
 
     /**
-     * Classic user informant
-     * 
      * @method inform
      * @param string $type - warn / error
      * @param string $message
@@ -117,26 +113,22 @@ class Http{
      */
     public static function inform(string $type,string $message): void
     {
-        $_SESSION['warning_type'] = $type;
+        SysLed::set('http_warning_type',$type);
 
-        $_SESSION['guide_information'] = $message;
+        SysLed::set('http_guide_information',$message);
     }
 
     /**
-     * Classic message forwarder for modules
-     * 
      * @method forward()
      * @param string $message
      * @return void
      */
     public static function forward(string $message): void
     {
-        $_SESSION['public_info_container'] = $message;
+        SysLed::set('public_info_container',$message);
     }
 
     /**
-     * Classic user redirect without guidance
-     * 
      * @method dispatch()
      * @param string $where
      * @return void
@@ -150,28 +142,33 @@ class Http{
 
     /**
      * @method report()
-     * @return string $text
+     * @return string
      */
     public static function report(): null|string
     {
-        if (isset($_SESSION['guide_information'])){
+        $httpReportText = match(SysLed::get('http_warning_type')){
 
-            $text = match($_SESSION['warning_type']){
+            'warn' => sprintf(self::httpInfo['htmlResponseBox'],self::htmlResponseLang['done'][LANG],SysLed::get('http_guide_information',true)),
 
-                'warn' => sprintf(self::httpInfo['htmlResponseBox'],self::htmlResponseLang['done'][LANG],$_SESSION['guide_information']),
+            'error' => sprintf(self::httpInfo['htmlResponseBoxFail'],self::htmlResponseLang['fail'][LANG],SysLed::get('http_guide_information',true)),
 
-                'error' => sprintf(self::httpInfo['htmlResponseBoxFail'],self::htmlResponseLang['fail'][LANG],$_SESSION['guide_information']),
+            false => null
+        };
 
-                null => null
-            };
+        $fromModules = SysLed::get('public_info_container',true);
 
-            unset($_SESSION['guide_information']);
-            unset($_SESSION['warning_type']);
+        if (is_string($fromModules)){
 
-            return $text;
+            $httpReportText .= $fromModules;
         }
 
-        return null;
+        if (is_string($httpReportText)){
+
+            return $httpReportText;
+        }else{
+
+            return null;
+        }
     }
 
     /**
@@ -199,16 +196,13 @@ class Http{
     }
 
     /**
-     * Classic HTTP POST - $_POST[]
-     * for html ui
-     * 
      * @method __px()
-     * @param string $deger
+     * @param string $postVariable
      * @param mixed|null $type
      * @param mixed|null $default
      * @return mixed|null|void|string|int
      */
-    public static function __px(string $deger,?string $type = null,?string $default = null)
+    public static function __px(string $postVariable,?string $type = null,?string $default = null)
     {
         $form = false;
 
@@ -219,30 +213,28 @@ class Http{
                 $form = true;
             }
 
-            // kimi kimden koruyoruz gerçekten 
+            if (preg_match('~[^\x20-\x7E\t\r\n]~', $postVariable) > 0 || strpos($postVariable, "\0") !== false || $form){
 
-            if (preg_match('~[^\x20-\x7E\t\r\n]~', $deger) > 0 || strpos($deger, "\0") !== false || $form){
-
-                AppAudit::check($_SERVER['REMOTE_ADDR']);
+                AppAudit::manageRequestCount($_SERVER['REMOTE_ADDR']);
                 
-                AppAudit::formBan();
+                AppAudit::ban();
             }
 
-            if (!isset($_POST[$deger])){
+            if (!isset($_POST[$postVariable])){
 
                 return $default;
             }else{
 
                 if (isset($type)){
 
-                    $r = Audit::fairHtml(strip_tags($_POST[$deger]));
+                    $r = Audit::fairHtml(strip_tags($_POST[$postVariable]));
 
                     settype($r,$type);
 
                     return $r;
                 }else{
 
-                    return Audit::fairHtml(strip_tags($_POST[$deger]));
+                    return Audit::fairHtml(strip_tags($_POST[$postVariable]));
                 }
             }
         }
@@ -273,7 +265,7 @@ class Http{
     }
 
     /**
-	 * Handle response.
+	 * Handle redundant response.
 	 * 
 	 * @method manageRedundantRequest()
      * @param int $launchKey
@@ -301,7 +293,7 @@ class Http{
 
                 header('HTTP/1.1 403 Forbidden',true,403);
 
-                die(self::netInfo[$so]);
+                die($so);
             break;
             case 1001:
 

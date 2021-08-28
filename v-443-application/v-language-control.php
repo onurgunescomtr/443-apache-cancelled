@@ -95,6 +95,14 @@ class Language{
 	 * @var object $languagePackageUri
 	 */
 	private object $languagePackageUri;
+    /**
+     * @var bool $langChanged
+     */
+    private bool $langChanged = false;
+    /**
+     * @var int $previousLang
+     */
+    private int $previousLang;
 
     public function __construct(string $langName)
     {
@@ -157,6 +165,23 @@ class Language{
     }
 
     /**
+     * @method setDefaults()
+     * @return void
+     */
+    private function setDefaults(): void
+    {
+        if (SysLed::audit('effective_lang_number',0,'higher')){
+                    
+            $this->d = SysLed::get('effective_lang_number');
+        }else{
+
+            $this->d = 0;
+        
+            Sysled::set('effective_lang_number',0);
+        }
+    }
+
+    /**
      * @method currentLanguage()
      * @return int $d
      */
@@ -202,15 +227,84 @@ class Language{
 	}
 
     /**
+     * @method isLangUri()
+     * @param string $word
+     * @param bool $get
+     * @return string|bool
+     */
+    public function isLangUri(string $word,bool $get = false): string|bool
+    {
+        if (is_string($this->languagePackageUri->$word[$this->d])){
+
+            if ($get){
+
+                return match($this->d){
+
+                    0 => $this->languagePackageUri->$word[1],
+
+                    1 => $this->languagePackageUri->$word[0]
+                }; 
+            }
+            
+            return true;
+        }else{
+
+            return false;
+        }
+    }
+
+    /**
+     * @method getLangUri()
+     * @param string $part
+     * @param int $lang
+     */
+    public function getCrossLangUri(string $part,int $lang): string
+    {
+        return match($lang){
+
+            0 => $this->languagePackageUri->$part[1],
+
+            1 => $this->languagePackageUri->$part[0]
+        };
+    }
+
+    /**
+     * @method isLangChanged()
+     * @return bool
+     */
+    public function langHasChanged(): bool
+    {
+        return $this->langChanged;
+    }
+
+    /**
+     * @method getPreviousLang()
+     * @return int
+     */
+    public function getPreviousLang(): int
+    {
+        return $this->previousLang;
+    }
+
+    /**
+     * @method handleDifferentLanding()
+     * @return void
+     */
+    public function handleDifferentLanding(): void
+    {
+        $this->setDefaults();
+    }
+
+    /**
      * @method setLang()
-     * @param string|null $t - dil adı
+     * @param string|null $t
      * @return void
      */
     private function setLang(?string $t): void
     {
         if (strlen($t) > 1 && !in_array($t,$this->baseLangControl)){
 
-            Scribe::appLog('Invalid language request from: ' . $_SESSION['client_address'] . ' IP Address');
+            Scribe::appLog('Invalid language request from: ' . SysLed::get('user_client_address') . ' IP Address');
 
             Http::inform('warn',BASICWARN['gecersiz_talep']);
         }
@@ -220,30 +314,36 @@ class Language{
             case 'turkce':
 
                 $this->d = 0;
+
+                $this->langChanged = SysLed::get('effective_lang_number') !== 0 ? true : false;
+
+                if ($this->langChanged){
+
+                    $this->previousLang = SysLed::get('effective_lang_number');
+                }
                 
-                $_SESSION['effective_lang_number'] = 0;
+                Sysled::set('effective_lang_number',0);
 
             break;
 
             case 'ingilizce':
 
                 $this->d = 1;
+
+                $this->langChanged = SysLed::get('effective_lang_number') !== 1 ? true : false;
+
+                if ($this->langChanged){
+
+                    $this->previousLang = SysLed::get('effective_lang_number');
+                }
                 
-                $_SESSION['effective_lang_number'] = 1;
+                Sysled::set('effective_lang_number',1);
 
             break;
 
             default:
 
-                if (isset($_SESSION['effective_lang_number']) && $_SESSION['effective_lang_number'] > 0){
-                    
-                    $this->d = $_SESSION['effective_lang_number'];
-                }else{
-
-                    $this->d = 0;
-                
-                    $_SESSION['effective_lang_number'] = 0;
-                }
+                $this->setDefaults();
 
             break;
 

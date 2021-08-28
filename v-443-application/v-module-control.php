@@ -37,9 +37,7 @@
 namespace VTS;
 
 Version\VersionCheck::dkontrol(__FILE__,'4.4.3');
-/**
- * ModuleBase - ModulYapi
- */
+
 class ModuleBase{
 
     use CommonModuleElements;
@@ -52,8 +50,14 @@ class ModuleBase{
 
     use Builder;
 
+    use ModuleBuilder;
+
 	use Screen;
 
+    /**
+     * @var int $baseID
+     */
+    private const baseID = 2443;
     /**
      * [EN] Determines if loaded module is sudo or not
      * [TR] Sudo modül değişkeni
@@ -316,8 +320,8 @@ class ModuleBase{
     }
 
     /**
-     * [TR] 443 Yapı sınıfını modulde oluşturur. 430 Çerçeve sınıfını modulde oluşturur.
-     * [EN] 443 Creates main structure class in module. 430 Creates frame class in module.
+     * [TR] 430 Yapı sınıfını modulde oluşturur. 443 Çerçeve ve Sayfa sınıfını modulde oluşturur.
+     * [EN] 430 Creates main structure class in module. 443 Creates frame and Page class in module.
      * @since 4.4.3 Other protocols removed in open source pack
      * @see startStructure_default()
      * 
@@ -326,20 +330,15 @@ class ModuleBase{
      */
     public function startStructure(): void
     {
-        Warden::setSession();
-
-        if (!VSDEVMODE){
-
-            Scribe::requestLog($this->process,$this->subProcess,$this->rawQuery);
-        }
-
-        Warden::setOpenKey();
+        Scribe::requestLog($this->process,$this->subProcess,$this->rawQuery);
+        
+        AppAudit::setOpenKey();
 
         switch(PROTOKOL):
         
             case 'http':
             
-                $this->frame = new Frame($this->setModuleLang('d','turkce'));
+                $this->frame = new Frame($this->setModuleLang(),self::baseID);
 
                 $this->vui = new Page;
 
@@ -409,22 +408,28 @@ class ModuleBase{
     */
     public function getMessages(): string|null
     {
-        $this->moduleMessages = $_SESSION['public_info_container'] ?? null;
+        $temp = SysLed::get('public_info_container');
 
-        unset($_SESSION['public_info_container']);
+        if (is_string($temp)){
+
+            $this->moduleMessages = $temp;
+
+            Sysled::del('public_info_container');
+        }else{
+
+            $this->moduleMessages = null;
+        }
 
         return $this->moduleMessages;
     }
 
     /**
      * @method setModuleLang()
-     * @param string $langValue
-     * @param null $langDefault
      * @return string|null $langValue
      */
-    public function setModuleLang(string $langValue,?string $langDefault): string|null
+    public function setModuleLang(): string|null
     {
-        return Http::__gx($langValue,$langDefault);
+        return Http::__gx('d');
     }
 
     /**
@@ -583,7 +588,7 @@ class ModuleBase{
 
             if ($this->responseAvailable){
 
-                $this->createScreen($this->defaultPageJS);
+                // $this->createScreen($this->defaultPageJS);
                 
                 $this->moduleScreen .= match($this->appModuleRequest){
 
@@ -746,10 +751,10 @@ class ModuleBase{
                 $d->modul_bilgi = serialize(json_encode(array('siparisNo' => Audit::randStrLight(32))));
             }
 
-            if (isset($_SESSION['account_page_number'])){
+            $temp = SysLed::get('user_page_idstring');
 
-                $d->kullanici_hesap_bilgi = $_SESSION['account_page_number'];
-            }
+            $d->kullanici_hesap_bilgi = is_string($temp) ? $temp : null;
+            
         }else{
 
             $d->girisadedi = (int)$d->girisadedi + 1;
@@ -775,7 +780,7 @@ class ModuleBase{
                 $this->setModuleUnit();
             }
 
-            $this->moduleScreen = $this->frame->getHtmlHead($this->headEklentileri()) .
+            $this->moduleScreen = $this->frame->getHtmlHead($this->setModuleHeadAdditions()) .
                 
                 $this->vui->startHtmlBody() .
                 

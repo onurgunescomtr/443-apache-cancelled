@@ -108,8 +108,8 @@ trait AbilityModuleDatabase{
 
             if ($requestUnit->id !== null && is_string($requestUnit->id)){
 
-                $_SESSION['sn'] = $this->{$this->processUnit};
-
+                SysLed::set('current_module_item',$this->{$this->processUnit});
+                
                 $this->sn = $requestUnit; 
                 
                 $this->moduleUnitUsage();
@@ -130,7 +130,7 @@ trait AbilityModuleDatabase{
 
             header('HTTP/1.1 404 Not Found',true,404);
 
-            die($this->translate('http_404_004'));
+            die($this->frame->translate('http_404_004'));
         }       
     }
 }

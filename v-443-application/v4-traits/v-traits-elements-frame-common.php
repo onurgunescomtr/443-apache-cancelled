@@ -36,7 +36,7 @@
 
 namespace VTS;
 
-Version\VersionCheck::dkontrol(__FILE__,'4.4.2');
+Version\VersionCheck::dkontrol(__FILE__,'4.4.3');
 
 trait CommonFrameElements{
 
@@ -76,15 +76,15 @@ trait CommonFrameElements{
     <!-- End Facebook Pixel Code -->";
     
     /**
-     * @var string $tdk head - başlık tanım anahtar kelime sabiti
+     * @var string $tdk
      */
     private string $tdk = '<title>%s</title>
     <meta name="description" content="%s">
     <meta name="keywords" content="%s">';
     /**
-     * @var string $headbir
+     * @var string $htmlHeadMetaOne
      */
-    private string $headbir = '<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+    private string $htmlHeadMetaOne = '<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
     <meta name="robots" content="archive,index,follow,translate">
     <meta property="fb:app_id" content="%s">
     <meta property="og:locale" content="'. LANGL .'">
@@ -94,88 +94,62 @@ trait CommonFrameElements{
     <meta property="og:image" content="'. ADDRESS . '/' . 'lokal-gorsel' . '/' . 'uygulama' . '/' . PREFIX. '-temel-logo.png">
     <link rel="shortcut icon" href="'. ADDRESS . '/' . 'lokal-gorsel' . '/' . 'uygulama' . '/' . PREFIX . '-web-mobile-icon.png">';
     /**
-     * @var string $headiki
+     * @var string $htmlHeadMetaTwo
      */
-    private string $headiki = '<meta property="og:description" content="%s">
+    private string $htmlHeadMetaTwo = '<meta property="og:description" content="%s">
     <meta property="og:title" content="%s">
     <meta property="og:url" content="%s">
     <meta name="generator" content="Verisanat v.'. VER .'">
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">';
     /**
-     * @var string $headDort
+     * @var string $htmlHeadMetaThree
      */
-    private string $headDort = '<meta property="product:brand" content="%s">
+    private string $htmlHeadMetaThree = '<meta property="product:brand" content="%s">
     <meta property="product:availability" content="%s">
     <meta property="product:condition" content="%s">
     <meta property="product:price:amount" content="%s">
     <meta property="product:price:currency" content="%s">
     <meta property="product:retailer_item_id" content="%s">';
     /**
-     * @var string $headüc
-     */
-    private string $headEskiUc = '<script src="'. ADDRESS . '/' . 'external-resources' . '/' . 'jquery' . '/' . 'jquery.351.js"></script>
-    <link rel="stylesheet" href="'. ADDRESS . '/' . 'external-resources' . '/' . 'BS450' . '/' . 'bootstrap.min.css" type="text/css">
-    <link rel="stylesheet" href="'. ADDRESS . '/' . 'external-resources' . '/' . 'fontawesome' . '/' . 'fawesome-582.min.css" type="text/css">
-    <link rel="stylesheet" href="'. ADDRESS . '/' . 'external-resources' . '/' . 'animate.css" type="text/css">
-    <link rel="stylesheet" href="'. ADDRESS . '/' . RELEASE . '-css' . '/' . 'css-duzenlemeler.css" type="text/css">
-    <script src="'. ADDRESS .'/' . 'external-resources' . '/' . 'BS450' . '/' . 'bootstrap.bundle.min.js"></script>
-    <script src="'. ADDRESS .'/' . 'external-resources' . '/' . 'fontawesome' . '/' . 'fontawesome.min.js"></script>
-    <script type="text/javascript" src="'. ADDRESS .'/' . 'external-resources' . '/' . 'slick' . '/' . 'slick.min.js"></script>
-    <link rel="stylesheet" href="'. ADDRESS . '/' . 'external-resources' . '/' . 'slick' . '/' . 'slick.css" type="text/css">
-    <link rel="stylesheet" href="'. ADDRESS . '/' . 'external-resources' . '/' . 'slick' . '/' . 'slick-theme.css" type="text/css">';
-    /**
      * @var string $headcopyright
      */
-    private string $headcopyright = '<meta name="copyright" content="Onur Güneş https://onurgunescomtr@bitbucket.org/onurgunescomtr">
-    <meta name="author" content="Onur Güneş, https://www.facebook.com/onur.gunes.developer">
-    <meta name="designer" content="Onur Güneş, Twitter Bootstrap, https://www.facebook.com/onur.gunes.developer">
-    <meta name="owner" content="Onur Güneş, https://www.onurgunes.com.tr">';
+    private string $headcopyright = '
+        <meta name="copyright" content="Onur Güneş https://onurgunescomtr@bitbucket.org/onurgunescomtr">
+        <meta name="author" content="Onur Güneş, https://www.facebook.com/onur.gunes.developer">
+        <meta name="designer" content="Onur Güneş, Twitter Bootstrap, https://www.facebook.com/onur.gunes.developer">
+        <meta name="owner" content="Onur Güneş, https://www.onurgunes.com.tr">
+    ';
     /**
-     * @var string $vuejshead
+     * @var string $vueJsHtmlHead
      */
-    private string $vuejshead = '<script src="'. ADDRESS .'/' . 'external-resources' . '/' . 'vue' . '/' . '2.6.11' . '/' . 'vue-prod.js"></script>';
+    private string $vueJsHtmlHead = '<script src="'. ADDRESS . '/' . 'external-resources' . '/' . 'vue' . '/' . '2.6.11' . '/' . 'vue-prod.js"></script>';
     /**
-     * @var string $vuejseklentiler
+     * @var string $vueJsExtensions
      */
-    private string $vuejseklentiler = 'external-resources' . '/' . 'vue' . '/' . 'extensions';
+    private string $vueJsExtensions = 'external-resources' . '/' . 'vue' . '/' . 'extensions';
     /**
-     * @var string $jshead
+     * @var string $jsExternalHtmlHead
      */
-    private string $jshead = '<script src="'. ADDRESS .'/' . 'external-resources' . '/' . '%s' . '/' . '%s"></script>';
+    private string $jsExternalHtmlHead = '<script src="'. ADDRESS . '/' . 'external-resources' . '/' . '%s' . '/' . '%s"></script>';
     /**
-     * @var string $reactjshead
+     * @var string $reactJsHtmlHead
      */
-    private string $reactjshead = '<script src="https://unpkg.com/react@16/umd/react.production.min.js" crossorigin></script><script src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js" crossorigin></script>';
+    private string $reactJsHtmlHead = '
+        <script src="https://unpkg.com/react@16/umd/react.production.min.js" crossorigin></script>
+        <script src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js" crossorigin></script>
+    ';
     /**
-     * uygulamaya eklenecek head te yer alması gereken kısımlar
-     * 
-     * @var string $htmlheadek 
+     * @var string $htmlHeadAdditions 
      */
-    public string|null $htmlheadek;
+    public string|null $htmlHeadAdditions;
     /**
-     * HTML head part
-     * 
-     * @var string $head 
+     * @var string $htmlHead 
      */
-    private string $head;
+    private string $htmlHead;
     /**
-	 * HTML document declaration
-	 * 
-     * @var string $doctype
+	 * @var string $doctype
      */
-    private string $doctype = '<!doctype html><html lang="%s"><head><meta charset="utf-8">';
-        /**
-     * href - imghref - sabit (-web-mobile-icon.png) standart uygulama header logo tipi, header ön kısımda yer alır
-     * 
-     * @var string $headerlogo 
-     */
-    public string $headerlogo = '<a title="Ana Sayfa" href="%s" class="animated fadeInRight mb-4"><img class="logo-yuvarla logo-header-boyutu shadow" src="%s-web-mobile-icon.png"></a>';
-    /**
-     * title - href - link adı 9002 - pratik sürüm $genelhlink
-     * 
-     * @var string $headerlink 
-     */
-    public string $headerlink = '<a class="p-2" title="%s" href="%s">%s</a>';
+    private string $docType = '<!doctype html><html lang="%s"><head><meta charset="utf-8">';
 	/**
 	 * @var string $userInterfaceName
 	 */
@@ -213,7 +187,6 @@ trait CommonFrameElements{
 						<ul class="dropdown-menu text-small shadow">
 							%s
 						</ul>
-						%s
 				</div>
 			</div>
 		</header>
@@ -241,7 +214,7 @@ trait CommonFrameElements{
 	/**
 	 * @var string $htmlHeaderNavUserLinks
 	 */
-	private string $htmlHeaderNavUserLink = '<li><a class="dropdown-item" href="%s" title="">%s</a></li>';
+	private string $htmlHeaderNavUserLink = '<li><a class="dropdown-item" href="%s" title="%s">%s</a></li>';
 	/**
 	 * @var string $htmlHeaderLinkHtml
 	 */
@@ -268,8 +241,8 @@ trait CommonFrameElements{
 	 * @var string $htmlHeaderSearchBar
 	 */
 	private string $htmlHeaderSearchBar = '
-		<form class="w-100">
-			<input type="search" class="form-control" placeholder="Search..." aria-label="Search">
+		<form class="w-100" action="' . ADDRESS . '/' . '%s' . '/' . '%s' . '" method="post" enctype="multipart/form-data">
+			<input type="search" class="form-control" placeholder="%s">
 		</form>
 	';
 	/**

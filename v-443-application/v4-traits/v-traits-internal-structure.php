@@ -36,7 +36,7 @@
 
 namespace VTS\Structure;
 
-\VTS\Version\VersionCheck::dkontrol(__FILE__,'4.4.2');
+\VTS\Version\VersionCheck::dkontrol(__FILE__,'4.4.3');
 
 trait InternalStructure{
     
@@ -50,9 +50,8 @@ trait InternalStructure{
      * @var array $internalClasses
      */
     private array $internalClasses = [
-        'contact' => 'ContactUs',
-        'about' => 'AboutThisApp',
-		'publications' => 'Publications001'
+        'publications' => 'Publications001',
+        'static-responses' => 'StaticResponse001'
     ];
 
     /**
@@ -77,9 +76,11 @@ trait InternalStructure{
      */
     private function injectDefaultClasses(): void
     {
-        $this->internalClasses[\VTS\App::getApp('contactUri')] = 'ContactUs';
+        $this->internalClasses[\VTS\App::getApp('contactUri')] = 'ClassicContactUs';
 
-        $this->internalClasses[\VTS\App::getApp('aboutUri')] = 'AboutThisApp';
+        $this->internalClasses[\VTS\App::getApp('aboutUri')] = 'ClassicAbout';
+
+        $this->internalClasses[\VTS\App::getApp('accOperationUri')] = 'UserProcesses001';
     }
 }
 ?>

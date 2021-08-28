@@ -144,10 +144,6 @@ final class SystemSetup{
     }
 
     /**
-     * 4.4.3 VTS
-     * 
-     * v.4.4.2 system configuration function
-     * 
      * @method getConfig()
      * @return void
      */
@@ -170,6 +166,8 @@ final class SystemSetup{
         unset($ta);
 
         define('VER',$this->setup->version);
+
+        define('FREL','v' . substr(VER,0,1));
 
         if (isset($this->setup->logFolder)){
 
@@ -310,8 +308,6 @@ final class SystemSetup{
 
             if ($dos->cd(RELEASE . '-module' . '/' . 'modular-structure')->folderHasAny()){
 
-                $dos->f('modul-islemler.json')->deleteFile();
-
                 if ($this->setup->server === 'apache'){
 
 					try{
@@ -323,7 +319,9 @@ final class SystemSetup{
 
 						die('Server changed. Please renew current page.');
 					}
-                }                
+                }
+
+                $dos->f('modul-islemler.json')->deleteFile();
             }
 
             unset($dos);
@@ -401,12 +399,12 @@ final class SystemSetup{
 
         session_name($sn);
 
+        define('VSSESSION',$this->setup->vSession);
+
         define('SUDOSESSION',$this->setup->suSessionName);
     }
 
     /**
-     * Veritabanı kullanımı açıksa ilgili veritabanı özelliklerini ve değerlerini atar
-     * 
      * @method setDatabase()
      * @return void
      */
@@ -552,8 +550,6 @@ final class SystemSetup{
                 'html' => null
             ]
         ]);
-
-        require_once BASE . '/' . RELEASE . '-external-sources' . '/' . 'Cookie.php';
     }
 }
 ?>

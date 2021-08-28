@@ -66,7 +66,7 @@ trait CommonPageElements{
             }(document, "script", "facebook-jssdk"));
             </script>
             <div class="fb-login-button" data-width="100" data-size="medium" data-button-type="continue_with" data-auto-logout-link="true" data-use-continue-as="true"
-            data-onlogin="window.location = \''. ADDRESS .'/merhaba-facebook\'"></div>
+            data-onlogin="window.location = \''. ADDRESS .'/' . 'hey-facebook\'"></div>
             <small class="form-text text-muted">Hiçbir koşul altında adınıza paylaşım yapılmayacaktır.</small>
             <small class="form-text text-muted">Fotoğraf ve isim Facebook tarafından sağlanmaktadır.</small>
         </div>
@@ -95,7 +95,6 @@ trait CommonPageElements{
             <div class="row mt-2">
                 <div class="col-md-6 text-center mx-auto">
                     <div class="col-auto">
-                        %s
                         <form id="iletisimsayfasi" class="mx-auto mb-4 text-center" action="'. ADDRESS .'/' . '%s' . '" method="post" enctype="multipart/form-data">
                             <h5 class="mb-4 text-warning"> %s </h5>
                             <div class="form-group text-center">
@@ -191,13 +190,12 @@ trait CommonPageElements{
 		<div class="container text-center vh-100">
 			<div class="col-auto modal-dialog-centered">
 				<form id="loginsayfasi" class="mx-auto mb-4 text-center" action="%s" method="post" enctype="multipart/form-data">
-					
 					<div class="form-group text-center">
-						<label class="fst-italic">%s</label>
-						<input type="email" class="form-control" placeholder="e-posta" name="postaadresi" autocomplete="on" autofocus required>
+						<label class="fst-italic m-2">%s</label>
+						<input type="email" class="form-control" placeholder="%s" name="postaadresi" autocomplete="on" autofocus required>
 					</div>
 					<div class="form-group">
-						<label class="fst-italic">%s</label>
+						<label class="fst-italic m-2">%s</label>
 						<input type="password" class="form-control" name="s" autocomplete="on" placeholder="%s" required>
 						<small class="form-text text-muted">%s</small>
 					</div>
@@ -206,8 +204,8 @@ trait CommonPageElements{
 						<input type="hidden" id="g-recaptcha-response" name="g-recaptcha-response">
 						<input type="hidden" name="action" value="loginsayfasi">
 					</div>
-					<a href="'. ADDRESS .'/account-operations/sifremi-yenile" class="btn btn-sm btn-outline-dark">%s</a>
-					<a href="'. ADDRESS .'/' . LOGINURI . '/' . '%s" class="btn btn-sm btn-outline-dark">%s</a>
+					<a href="'. ADDRESS . '/' . '%s' . '/' . '%s" class="btn btn-sm btn-outline-dark">%s</a>
+					<a href="'. ADDRESS . '/' . LOGINURI . '/' . '%s" class="btn btn-sm btn-outline-dark">%s</a>
 					<button type="submit" class="btn btn-sm btn-outline-primary">%s</button>
 					<div class="form-group mt-4">
 			%s
@@ -224,13 +222,75 @@ trait CommonPageElements{
 		</div>
 	';
     /**
-     * container arayuz-sabit
-     * 
+     * @var string $classicChangePasswordElement
+     */
+    public string $classicRequestPasswordChangeElement = '
+        <div class="container text-center my-auto">
+            <div class="col-auto modal-dialog-centered mb-4">
+                <form id="sifreislemsayfasi" class="mx-auto mb-4" action="' . ADDRESS . '/' . '%s'  . '/' . '%s" method="post" enctype="multipart/form-data">
+                    <h5 class="mb-4">%s</h5>
+                %s
+                    <input type="hidden" class="hidden" name="giris-istegi" value="%s">
+                    <input type="hidden" id="g-d-sifre-yenile" name="g-d-sifre-yenile" value="">
+                    <div class="form-group mt-4 text-center">
+                        <a href="'. ADDRESS . '/' . LOGINURI . '" class="btn btn-sm btn-outline-secondary mr-1">%s</a>
+                        <button type="submit" class="btn btn-sm btn-outline-primary">%s</button> 
+                    </div>
+                    <div class="form-group mt-2">
+                        <a href="'. ADDRESS . '" class="btn btn-sm btn-outline-info">%s</a>
+                        <a href="'. ADDRESS . '/' . '%s" class="btn btn-sm btn-outline-danger">%s</a>
+                    </div>
+                </form>
+                
+            </div>
+        </div>
+    ';
+    /**
+     * @var string $classicSetNewPasswordElement
+     */
+    public string $classicSetNewPasswordElement = '
+        <div class="col-auto modal-dialog-centered text-center">
+            <div class="mx-auto mb-4">
+                <h4 class="mb-4">%s</h4>
+                <form id="sifreyenileislemsayfasi" class="mx-auto mb-4" action="' . ADDRESS . '/' . '%s' . '/' . '%s' . '" method="post" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label class="fst-italic">%s</label>
+                        <input type="password" class="form-control" name="s" placeholder="%s" required pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="%s" autocomplete="current-password">
+                        <input type="password" class="form-control mt-2" name="stekrar" placeholder="%s" required autocomplete="current-password">
+                        <input type="hidden" class="hidden" name="giris-sifre-yenileme" value="dogru">
+                    </div>
+                    <button type="submit" class="btn btn-sm btn-outline-primary">%s</button>
+                </form>
+                <p class="text-center mb-4">%s</p>
+            </div>
+        </div>
+    ';
+    /**
+     * @var string $classicDataDeletionRequestElement
+     */
+    public string $classicDataDeletionRequestElement = '
+        <div class="text-center sticky-top">
+            <p class="text-center mt-3">%s</p>
+        <div class="list-group shadow-lg">
+            <a href="'. ADDRESS . '/' .'%s" class="mt-2 list-group-item list-group-item-action list-group-item-dark">%s</a>
+        </div>
+        <div class="col-md-9 d-flex p-sol-yok p-sag-yok kucuk-ekran-yasla mt-2">
+            <div class="col-md-12 modal-dialog-centered">
+                <h4 class="mt-1 text-center">%s</h4>
+                <p class="text-center">%s %s</p>
+                <p class="text-center">%s</p>
+                <p class="text-center">%s</p>
+                <p class="text-center">'. DOMAIN .' %s</p>
+            </div>
+        </div>
+    ';
+    /**
      * @var string $htmlBasicContainer
      */
     public $htmlBasicContainer = '<div class="container"><div class="row mb-2">%s</div></div>';
     /**
-     * link, fotograf, başlık, özet yazı
+     * [TR] link, fotograf, başlık, özet yazı
+     * [EN] link, photo, title, summary text
      * 
     * @var string $htmlCardItem
     */
@@ -247,7 +307,8 @@ trait CommonPageElements{
 		</a>
 	';
     /**
-     * fotograf, başlık
+     * [TR] fotograf, başlık
+     * [EN] photo, title
      * 
     * @var string $htmlCategoryCardItem  
     */

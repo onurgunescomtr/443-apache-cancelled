@@ -52,12 +52,6 @@ class InterfaceControl{
      */
     private string $defaultScreen;
     /**
-     * özel işlem dosya yollarının bulunduğu array.
-     * 
-     * @var array $ozelislemler 
-     */
-    private $ozelislemler;
-    /**
      * işlem adresini yada dizisini barındırır
      * 
      * @var mixed|string|array|int $processRequest 
@@ -66,9 +60,9 @@ class InterfaceControl{
     /**
      * özel birim arayuzu, testler - admin panel vb.
      * 
-     * @var bool $upperStructureInterface 
+     * @var bool $sudoStructureInterface 
      */
-    private bool $upperStructureInterface = false;
+    private bool $sudoStructureInterface = false;
     /**
      * içyapı işlemi mi değil mi
      * 
@@ -92,20 +86,14 @@ class InterfaceControl{
      */
     private bool $kontrolSonlandir = false;
     /**
-     * Modül yada Sistem işlem / arayüz adı.
-     * 
      * @var string $aa 
      */
     private $aa;
     /**
-     * özel birimler için geçerli arayuz adı, parçası, html i
-     * 
      * @var array $ob 
      */
     private $ob = OZELBIRIMLER;
     /**
-     * modüller için geçerli iç yapı harici işlem adları,parçaları,html,id 9002
-     * 
      * @var array $mi 
      */
     private $mi = MODULISLEMLER;
@@ -113,6 +101,10 @@ class InterfaceControl{
      * @var bool $invalidRequestResponse
      */
     private bool $invalidRequestResponse;
+    /**
+     * @var int $sessionType
+     */
+    private int $sessionType;
 
     /**
      * [TR] Modül arayuzu kaydı denetler
@@ -169,7 +161,7 @@ class InterfaceControl{
      */
     private function obDenetle(string $islem): void
     {
-        $this->upperStructureInterface = false;
+        $this->sudoStructureInterface = false;
 
         if (array_key_exists($islem,$this->ob)){
 
@@ -177,7 +169,7 @@ class InterfaceControl{
             
             $this->validInterface = true;
             
-            $this->upperStructureInterface = true;
+            $this->sudoStructureInterface = true;
         }
 
         $this->kontrolSonlandir = true;
@@ -230,7 +222,7 @@ class InterfaceControl{
 
             $this->internalStructInterface => $i,
 
-            $this->upperStructureInterface => 'special-unit-' . $i,
+            $this->sudoStructureInterface => $this->setSudo($i),
 
             $this->moduleInterface => $this->mi[$this->aa]
         };
@@ -252,6 +244,20 @@ class InterfaceControl{
         $this->invalidRequestResponse = App::getApp('invalidRequestResponse');
 
         $this->injectDefaultClasses();
+
+        $this->sessionType = 411;
+    }
+
+    /**
+     * @method setSudo()
+     * @param string $cycleName
+     * @return string
+     */
+    private function setSudo(string $cycleName): string
+    {
+        $this->sessionType = 10;
+
+        return 'special-unit-' . $cycleName;
     }
 
     /**
@@ -265,6 +271,15 @@ class InterfaceControl{
     public function getProcess(): string|array|int
     {
         return $this->processRequest;
+    }
+
+    /**
+     * @method getSessionType()
+     * @return int
+     */
+    public function getSessionType(): int
+    {
+        return $this->sessionType;
     }
 }
 ?>

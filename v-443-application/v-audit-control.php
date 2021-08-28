@@ -38,33 +38,15 @@ namespace VTS;
 
 Version\VersionCheck::dkontrol(__FILE__,'4.4.3');
 
-/**
- * AppAudit - Denetim
- */
 final class AppAudit{
 
-    /**
-     * array search - bul - key ler için adres yaz baska array, adresi dondur.
-     * 
-     * @var array $PROCESS
-     */
     protected const PROCESS = array(
         '0' => 'verify',
         '1' => 'confirm',
         '2' => 'subs-cancellation-delete-my-data'
     );
-    
-    protected const PIT = array(
-        '0' => 'VsIslemDestek,process_type',
-        '1' => 'VsIslemDestek,process_type',
-        '2' => 'VsIslemDestek,process_type'
-    );
 
-    /**
-     * @var array $appAuditInformation
-     */
     private const appAuditInformation = [
-
 		'TR' => [
 			'banned' => '200.061.IP address is banned for this API.',
 			'silent' => '200.062.IP address is muted.',
@@ -82,58 +64,27 @@ final class AppAudit{
 			'google_api_off' => '<div class="d-none">Google API is disabled for this app.</div>'
 		]
     ];
-
-    /**
-     * URL and URI common additional cleaner. Added for url-control.
-     * URL ve URI için genel temizleyici. url-kontrol için eklendi.
-     * 
-     * @method uriHopper() 
-     * @param string $part
-     * @return null|string $p
-     */
-    public static function uriHopper(string $part = null): null|string
-    {
-        if (isset($part)){
-        
-            $part = trim($part);
-            
-            $part = urlencode($part);
-            
-            $ridOff = array(';','%26%2359');
-            
-            $change = array(null,null);
-            
-            return str_replace($ridOff,$change,$part);
-        }
-
-        return null;
-    }
     
     /**
-     * Process support function for auditing operations.
-     * Returns package object from related db process.
-     * 
-     * Denetleyiciler için ek işlem kontrolu sağlar. Denetim onayı için eklendi. Sonuç paket objesi döndürür.
+     * Process support function for validation. Returns package object from related db process.
      * 
      * @method checkProcessSupport() 
      * @param string $work
      * @param string $uWorkId
      * @return object|bool $paket
      */
-    public static function checkProcessSupport(string $work, $uWorkId = null): object|bool
+    public static function checkProcessSupport(string $work,$uWorkId = null): object|bool
     {
         if (in_array($work,self::PROCESS)){
 
             $k = array_search($work,self::PROCESS);
 
-            $target = explode(',',self::PIT[$k]);
-
             if (isset($uWorkId)){
 
-                $paket = \Model::factory($target[0])->filter('kodara',$uWorkId)->whereEqual($target[1],$k)->findOne();
+                $paket = \Model::factory('VsIslemdestek')->useIdColumn('gercekkod')->whereEqual('islemtipi',$k)->findOne($uWorkId);
             }else{
 
-                $paket = \Model::factory($target[0])->whereEqual($target[1],$k)->findMany();
+                $paket = \Model::factory('VsIslemdestek')->whereEqual('islemtipi',$k)->findMany();
             }
         }else{
             
@@ -144,8 +95,28 @@ final class AppAudit{
     }
 
     /**
-     * creates a new record for VsLock table
-     * 
+     * @method setProcessSupport() 
+     * @param string $kno
+     * @param string $istipi
+     * @param string $kkodu
+     * @return void
+     */
+    public static function setProcessSupport(string $kno,int $istipi,string $kkodu): void
+    {
+        $ydestek = \Model::factory('VsIslemdestek')->create();
+
+        $ydestek->kullaniciid = $kno;
+
+        $ydestek->islemtipi = $istipi;
+
+        $ydestek->gercekkod = $kkodu;
+
+        $ydestek->tarihsaat = date('d-m-Y H:i:s');
+
+        $ydestek->save();
+    }
+
+    /**
      * @method ban()
      * @return void
      */
@@ -155,7 +126,7 @@ final class AppAudit{
         
         $yeniblock->adres = $_SERVER['REMOTE_ADDR'];
 
-        $yeniblock->kapalianahtar = 'erisim-banned';
+        $yeniblock->kapalianahtar = get_called_class();
 
         $yeniblock->save();
 
@@ -165,129 +136,88 @@ final class AppAudit{
     }
 
     /**
-     * Session request count independed illegal form action locker.
-     * 
-     * istek sayısından bağımsız formlar için aykırı durumda kilit kaydı alır. 90001 düzenle iki aynı isim
-     * 
-     * @method formban() 
-     * @return void
-     */
-    public static function formBan(): void
-    {
-        $yeniblock = \Model::factory('VsKilit')->create();
-        
-        $yeniblock->adres = $_SERVER['REMOTE_ADDR'];
-
-        $yeniblock->kapalianahtar = 'form-banned';
-
-        $yeniblock->save();
-
-        session_destroy();
-
-        die(self::appAuditInformation[LANG]['silent']);
-    }
-
-    /**
-     * Session request count dependent blocker.
-     * 
-     * istek sayısına bağlı olarak kullanıcı IP sini ilgili işlemden yasaklar.
-     * 
-     * @method blockla() 
-     * @return void
-     */
-    public static function block(): void
-    {
-        if ($_SESSION['request_count'] > 15){
-
-            $ipadresi = explode('-', $_SESSION['sealed_key']);
-
-            $yeniblock = \Model::factory('VsKilit')->create();
-
-            $yeniblock->adres = $ipadresi[0];
-
-            $yeniblock->kapalianahtar = $ipadresi[1];
-
-            $yeniblock->save();
-
-            $_SESSION['request_count'] = 1;
-        }
-    }
-
-    /**
-     * Aynı adresten 20 tanımsız isteği oturumda barındırır
-     * sonrasında çalışmayı dururur.
-     * 
      * @method lightBlock()
      * @return void
      */
     public static function lightBlock(): void
     {
-        !isset($_SESSION['i_am_insistent']) ? $_SESSION['i_am_insistent'] = 0 : $_SESSION['i_am_insistent'] += 1;
+        if (is_int(Sysled::get('http_request_count_light'))){
 
-        if ($_SESSION['i_am_insistent'] > 20){
+            Sysled::modify('http_request_count_light',null,'counter');
+        }else{
+
+            SysLed::set('http_request_count_light',1);
+        }
+
+        if (Sysled::get('http_request_count_light') > 25){
 
             die(self::appAuditInformation[LANG]['unnecessary']);
         }
     }
 
     /**
-     * isteği ileten IP adresini kilit kayıtlarında kontrol eder.
-     * bulursa google a gönderir. Yoksa istek sayısını kaydeder.
-     * 
-     * @method check() 
+     * @method manageRequestCount() 
      * @param string $hop
      * @return void|redirect|exit
      */
-    public static function check(string $hop = null): void
+    public static function manageRequestCount(): void
     {
-        $kontrol = isset($hop) ? \Model::factory('VsKilit')->whereEqual('adres', $hop)->count() : \Model::factory('VsKilit')->whereEqual('adres', $_SESSION['client_address'])->count();
+        $db = \Model::factory('VsKilit');
 
-        if ($kontrol > 0){
+        if ($db->whereEqual('adres',Sysled::get('user_client_address'))->count() > 0){
 
-            Http::dispatch('https://www.google.com');
+            Sysled::logOff();
+
+            die(self::appAuditInformation[LANG]['banned']);
         }
 
-        if (isset($_SESSION['request_count'])){
+        Sysled::modify('http_request_count',null,'counter');
 
-            $_SESSION['request_count'] += 1;
+        if (SysLed::get('http_request_count') > 15){
 
-        }else{
+            $who = explode('-',Sysled::get('user_sealed_key'));
 
-            session_destroy();
+            $new = $db->create();
 
-            die(self::appAuditInformation[LANG]['fragile']);
+            $new->adres = $who[0];
+
+            $new->kapalianahtar = $who[1];
+
+            $new->save();
+
+            Sysled::modify('http_request_count',1);
         }
+        
     }
 
     /**
-     * @method formVarCheck()
-     * @param array $bunlari
-     * @param mixed|string|null $bunu olumsuzluk neticesinde uygulama bilgilendir metni.
+     * @method checkPostVars()
+     * @param array $toValidate
+     * @param mixed|string|null $bunu
      * @return bool $k
      */
-    public static function formVarCheck(array $bunlari,?string $bunu = null): bool
+    public static function checkPostVars(array $toValidate): bool
     {
-        foreach($bunlari as $t){
+        $z = 0;
+        foreach($toValidate as $t){
 
-            if (empty($_POST[$t]) || $_POST[$t] === null){
+            if (isset($_POST[$t])){
 
-                $bunu === null ? Http::inform('warn',self::appAuditInformation[LANG]['form']) : Http::inform('warn',$bunu);
+                if (is_string(Http::__px($t)) || is_int(Http::__px($t))){
 
-				return false;
+                    $z++;
+                }                
             }
         }
 
-        return true;
+        return $z === count($toValidate) ? true : false;
     }
 
     /**
-     * Tipik Google Recaptcha v3 kontrol
-     * g-recatpcha-response
-     * 
-     * @method googleCaptCheck()
+     * @method checkGoogleCapt()
      * @return bool $k
      */
-    public static function googleCaptCheck(): bool
+    public static function checkGoogleCapt(): bool
     {
         if (isset($_POST['g-recaptcha-response']) && App::getApp('googleIsOn')){
             
@@ -309,15 +239,12 @@ final class AppAudit{
     }
 
     /**
-     * Özel Google recaptcha v3 kontrol
-     * $ozelformhedefi
-     * 
-     * @method googleCaptSpecialCheck()
+     * @method checkGoogleCaptSpecial()
      * @param string $ozelFormDegeri
      * @param string $ozelFormHedefi
      * @return bool $k
      */
-    public static function googleCaptSpecialCheck(string $ozelFormDegeri,string $ozelFormHedefi): bool
+    public static function checkGoogleCaptSpecial(string $ozelFormDegeri,string $ozelFormHedefi): bool
     {
         if (isset($_POST[$ozelFormDegeri]) && App::getApp('googleIsOn')){
             
@@ -339,10 +266,6 @@ final class AppAudit{
     }
 
     /**
-     * Google sabitleriyle birlikte google captcha v3 html script tagını döndürür.
-     * "html elem id" => $formElemId
-     * "action" => $actionName
-     * 
      * @method getGoogleCaptSpecial()
      * @param string $formElemId html öğe id
      * @param string $actionName script action adı
@@ -362,37 +285,17 @@ final class AppAudit{
     }
 
     /**
-     *  oturumu kontrol eder. Çerezi ve oturumu siler.
-     * 
-     * @method userSessionCheck()
+     * @method checkUserSession()
      * @return bool
      */
-    public static function userSessionCheck(): bool
+    public static function checkUserSession(): bool
     {
-        if (isset($_SESSION['account_page_number'])){
+        if (is_string(SysLed::get('user_page_idstring'))){
 
             return false;
         }else{
 
-            $cookie = new \Delight\Cookie\Cookie(UCOOKIE);
-
-            $cookie->setValue(null);
-
-            $cookie->setMaxAge(1);
-
-            $cookie->setPath('/');
-
-            $cookie->setDomain(DOMAIN);
-
-            $cookie->setHttpOnly(true);
-
-            $cookie->setSecureOnly(true);
-
-            $cookie->setSameSiteRestriction('Strict');
-
-            $cookie->delete();
-
-            session_destroy();
+            SysLed::logOff();
 
             return true;
         }
@@ -401,12 +304,12 @@ final class AppAudit{
     /**
      * 8 - 20 karakter - Eşleşme kontrolu
      * 
-     * @method userPassCheck()
+     * @method checkUserPass()
      * @param string $dsif
      * @param string $dsifiki
      * @return bool $st
      */
-    public static function userPassCheck(string $dsif,string $dsifiki): bool
+    public static function checkUserPass(string $dsif,string $dsifiki): bool
     {
         if (preg_match("/((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W]).{8,20})/", $dsif) === 1 && $dsif === $dsifiki){
 
@@ -419,11 +322,11 @@ final class AppAudit{
     /**
      * email adres kontrolu
      * 
-     * @method userNameCheck()
+     * @method checkUserName()
      * @param string $k
      * @return bool $kadi
      */
-    public static function userNameCheck(string $k): bool
+    public static function checkUserName(string $k): bool
     {
         if (is_string(filter_var($k,FILTER_VALIDATE_EMAIL))){
 
@@ -434,30 +337,21 @@ final class AppAudit{
     }
 
     /**
-     * @method getUserPageNumber()
-     * @return mixed|string|null
-     */
-    public static function getUserPageNumber(): mixed
-    {
-        return $_SESSION['account_page_number'] ?? null;
-    }
-
-    /**
-     * @method getUserName()
-     * @return mixed|string|null
-     */
-    public static function getUserName(): mixed
-    {
-        return $_SESSION['kullanici_adi_soyadi'] ?? null;
-    }
-
-    /**
      * @method checkOpenKey()
-     * @return bool $erisim
+     * @return bool
      */
-    public static function checkOpenKey(string $gelen): bool
+    public static function checkOpenKey(string $toValidate): bool
     {
-        return $_SESSION['public_key'] === $gelen ? true : false;
+        return SysLed::audit('user_public_key',$toValidate);
+    }
+
+    /**
+     * @method checkUserKeys()
+     * @return bool
+     */
+    public static function checkUserKeys(): bool
+    {
+        return is_string(SysLed::get('user_public_key')) && is_string(SysLed::get('user_sealed_key'));
     }
 
     /**
@@ -465,16 +359,169 @@ final class AppAudit{
      * @param string $izin
      * @return bool $a
      */
-    public static function checkSearch(string $izin): bool
+    public static function checkSearch(string $toValidate): bool
     {
-        if ($_SESSION['ARAMAIZNI'] === $izin){
+        if (SysLed::audit('search_permit_string',$toValidate)){
 
-            unset($_SESSION['ARAMAIZNI']);
+            SysLed::del('search_permit_string');
 
             return true;
         }
 
         return false;
+    }
+
+    /**
+     * @method setOpenKey() 
+     * @return void
+     */
+    public static function setOpenKey(): void
+    {
+        if (is_bool(SysLed::get('user_public_key'))){
+
+            SysLed::set('user_public_key',base64_encode(Audit::randStr(64)));
+        }
+    }
+
+    /**
+     * @method getOpenKey()
+     * @return string $acikA
+     */
+    public static function getOpenKey(): string
+    {
+        return Sysled::get('user_public_key');
+    }
+
+    /**
+	 * @method setSealedKey()
+     * @return void
+     */
+    public static function setSealedKey(): void
+    {
+        if (is_bool(SysLed::get('user_sealed_key'))){
+
+            SysLed::set('user_sealed_key',$_SERVER['REMOTE_ADDR'] .'-'. Audit::randStrAuth(32));
+
+            SysLed::set('http_request_count',1);
+        }
+    }
+
+    /**
+	 * @method createSessionUri()
+	 * @return string
+	 */
+	public static function createSessionUri(): string
+	{
+		if (is_bool(SysLed::get('http_public_hash_uri'))){
+
+            SysLed::set('http_public_hash_uri',hash('sha256',SysLed::get('user_open_key') . SysLed::get('user_sealed_key')));
+		}
+
+		return SysLed::get('http_public_hash_uri');
+	}
+
+    /**
+	 * @method getSessionUri()
+	 * @return void
+	 */
+	public static function getSessionUri(): string
+	{
+		$tempUri = SysLed::get('http_public_hash_uri');
+
+        SysLed::delMany([
+            'http_public_hash_uri',
+            'http_public_key'
+        ]);
+
+		return $tempUri;
+	}
+
+    /**
+     * @method authSearch()
+     * @return string $aramaIzni
+     */
+    public static function authSearch(): string
+    {
+        return SysLed::get('search_permit_string',true);
+    }
+
+    /**
+     * @method setSearch()
+     * @return void
+     */
+    public static function setSearch(): void
+    {
+        SysLed::set('search_permit_string',Audit::randStrLight(32));
+    }
+
+    /**
+     * [EN] Obfuscater
+     * [TR] Karıştırıcı
+     * 
+     * @method setSimpleLock()
+     * @param string $bData
+     * @return void
+     */
+    public static function setSimpleLock(string $bData): bool
+    {
+        if (is_bool(SysLed::get('user_simple_lock_idstring'))){
+
+            $startKey = Audit::randStrLight(16);
+
+            $endKey = Audit::randStrLight(12);
+
+            $fName = Audit::randStrLight(24);
+
+            if (strlen($bData) > 16){
+
+                $generatedData = [
+
+                    $startKey . substr($bData,0,10),
+                    $endKey . substr($bData,10)
+                ];
+
+                Sysled::set('user_simple_lock_filename',$fName);
+
+                file_put_contents(BASE . '/' . 'local-folder' . '/' . $fName . '-locker.vssl',
+                    serialize([
+                        'len_s' => strlen($startKey),
+                        'len_e' => strlen($endKey)
+                    ])
+                );
+
+                SysLed::set('user_simple_lock_idstring',serialize($generatedData));
+
+                return true;
+            }else{
+
+                return false;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @method openSimpleLock()
+     * @return string
+     */
+    public static function openSimpleLock(): string|null
+    {
+        $generatedData = SysLed::get('user_simple_lock_idstring',true);
+
+        $keyFile = BASE . '/' . 'local-folder' . '/' . SysLed::get('user_simple_lock_filename',true) . '-locker.vssl';
+
+        if (is_string($generatedData)){
+
+            $nums = unserialize(file_get_contents($keyFile)); unlink($keyFile);
+
+            $arrD = unserialize($generatedData);
+
+            return substr($arrD[0],$nums['len_s'],10) . substr($arrD[1],$nums['len_e']);
+        }else{
+
+            return null;
+        }
     }
 }
 ?>

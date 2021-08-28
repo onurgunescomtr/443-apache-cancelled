@@ -48,11 +48,5 @@ final class AdministrationPanel001 implements VerisanatSudoPanel{
 	// Empty class for open source package.
 	// There is no sudo panel for openSource pack
 
-	// Verisanat AP is the most time efficient, easy to use panel you have ever seen.
-	// i am willing to bet on it :)
-
-	// Such as? You can update a category of products (lets say 50 models all) of 25 (or more)
-	// of them, price / stock / discount / name details (including market places records)
-	// altogether, on just one screen, with just one click.
 }
 ?>
